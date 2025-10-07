@@ -94,7 +94,7 @@ app.whenReady().then(async () => {
   createWindow();
 
   if (discordIsRunning) {
-    DiscordRPC('GeForce NOW');
+    DiscordRPC('GeForce NOW').catch(console.error);
   }
 
   app.on('activate', async function () {
@@ -137,7 +137,7 @@ app.on('browser-window-created', async function (e, window) {
 
   if (discordIsRunning) {
     window.on('page-title-updated', async function (e, title) {
-      DiscordRPC(title);
+      DiscordRPC(title).catch(console.error);
     });
   }
 });
