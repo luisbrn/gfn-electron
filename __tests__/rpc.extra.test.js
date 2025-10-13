@@ -15,7 +15,9 @@ describe('rpc additional tests', () => {
     axios.get
       .mockRejectedValueOnce(error)
       .mockRejectedValueOnce(error)
-      .mockResolvedValue({ data: '<a data-ds-appid="999"><div class="title">Retry Game</div></a>' });
+      .mockResolvedValue({
+        data: '<a data-ds-appid="999"><div class="title">Retry Game</div></a>',
+      });
 
     const resp = await requestWithBackoff('http://example.invalid');
     expect(resp).toBeDefined();

@@ -102,38 +102,41 @@ function initializeRPC() {
       log('info', 'Example: DISCORD_CLIENT_ID=1234567890123456789 npm start');
     }
     try {
-        // Light probe: if DISCORD_DISABLE_IPC is set, skip initialization.
-        if (process.env.DISCORD_DISABLE_IPC === 'true') {
-          log('info', 'Skipping Discord RPC due to DISCORD_DISABLE_IPC');
-          client = null;
-        } else {
-          // On Unix-like systems, discord creates a unix socket at /run/user/<uid>/discord-ipc-*
-          // Probe common locations to avoid attempting to connect when IPC is unavailable.
-          let shouldProbe = true;
-          try {
-            if (process.platform !== 'win32') {
-              const uid = process.getuid ? process.getuid() : null;
-              const candidates = [];
-              if (uid !== null) candidates.push(`/run/user/${uid}/discord-ipc-0`);
-              candidates.push('/tmp/discord-ipc-0');
-              const exists = candidates.some(p => {
-                try {
-                  return fs.existsSync(p);
-                } catch (e) {
-                  return false;
-                }
-              });
-              if (!exists) {
-                log('debug', 'No Discord IPC socket found in common locations; skipping RPC initialization');
-                shouldProbe = false;
+      // Light probe: if DISCORD_DISABLE_IPC is set, skip initialization.
+      if (process.env.DISCORD_DISABLE_IPC === 'true') {
+        log('info', 'Skipping Discord RPC due to DISCORD_DISABLE_IPC');
+        client = null;
+      } else {
+        // On Unix-like systems, discord creates a unix socket at /run/user/<uid>/discord-ipc-*
+        // Probe common locations to avoid attempting to connect when IPC is unavailable.
+        let shouldProbe = true;
+        try {
+          if (process.platform !== 'win32') {
+            const uid = process.getuid ? process.getuid() : null;
+            const candidates = [];
+            if (uid !== null) candidates.push(`/run/user/${uid}/discord-ipc-0`);
+            candidates.push('/tmp/discord-ipc-0');
+            const exists = candidates.some(p => {
+              try {
+                return fs.existsSync(p);
+              } catch (e) {
+                return false;
               }
+            });
+            if (!exists) {
+              log(
+                'debug',
+                'No Discord IPC socket found in common locations; skipping RPC initialization',
+              );
+              shouldProbe = false;
             }
-          } catch (e) {
-            log('debug', 'Error probing Discord IPC socket:', e && e.message ? e.message : e);
           }
-
-          if (shouldProbe) client = require('discord-rich-presence')(clientId);
+        } catch (e) {
+          log('debug', 'Error probing Discord IPC socket:', e && e.message ? e.message : e);
         }
+
+        if (shouldProbe) client = require('discord-rich-presence')(clientId);
+      }
       log('debug', 'Discord RPC client initialized');
       // Avoid uncaught errors from the underlying transport
       try {

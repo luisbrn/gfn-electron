@@ -12,8 +12,8 @@ describe('DiscordRPC presence behavior', () => {
   test('uses numeric Steam ID for largeImageKey when available', async () => {
     const fakeClient = { updatePresence: jest.fn() };
     rpc._test.setClient(fakeClient);
-  // seed cache with legacy string numeric steam id
-  rpc._test.setGameCache({ 'Some Game': '123456' });
+    // seed cache with legacy string numeric steam id
+    rpc._test.setGameCache({ 'Some Game': '123456' });
     await rpc.DiscordRPC('Some Game on GeForce NOW');
     expect(fakeClient.updatePresence).toHaveBeenCalled();
     const args = fakeClient.updatePresence.mock.calls[0][0];
@@ -23,8 +23,8 @@ describe('DiscordRPC presence behavior', () => {
   test('falls back to nvidia image when no numeric steam id', async () => {
     const fakeClient = { updatePresence: jest.fn() };
     rpc._test.setClient(fakeClient);
-  // seed cache with non-numeric legacy string
-  rpc._test.setGameCache({ 'Other Game': 'unknown' });
+    // seed cache with non-numeric legacy string
+    rpc._test.setGameCache({ 'Other Game': 'unknown' });
     await rpc.DiscordRPC('Other Game on GeForce NOW');
     expect(fakeClient.updatePresence).toHaveBeenCalled();
     const args = fakeClient.updatePresence.mock.calls[0][0];

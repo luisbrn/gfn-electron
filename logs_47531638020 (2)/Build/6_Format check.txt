@@ -1,0 +1,16 @@
+﻿2025-10-13T20:56:47.9131009Z ##[group]Run npm run format:check --if-present
+2025-10-13T20:56:47.9131370Z [36;1mnpm run format:check --if-present[0m
+2025-10-13T20:56:47.9163165Z shell: /usr/bin/bash -e {0}
+2025-10-13T20:56:47.9163643Z ##[endgroup]
+2025-10-13T20:56:48.1640929Z 
+2025-10-13T20:56:48.1641393Z > geforcenow-electron@2.2.0 format:check
+2025-10-13T20:56:48.1641945Z > prettier --check "**/*.{js,md,json}"
+2025-10-13T20:56:48.1642156Z 
+2025-10-13T20:56:48.3288116Z Checking formatting...
+2025-10-13T20:56:48.4229101Z [warn] __tests__/rpc.discord.test.js
+2025-10-13T20:56:48.4362626Z [warn] __tests__/rpc.extra.test.js
+2025-10-13T20:56:48.4620361Z [warn] __tests__/rpc.ttl.test.js
+2025-10-13T20:56:48.5466596Z [warn] game_cache.json
+2025-10-13T20:56:49.2383672Z [warn] scripts/rpc.js
+2025-10-13T20:56:49.2802433Z [warn] Code style issues found in 5 files. Forgot to run Prettier?
+2025-10-13T20:56:49.3129462Z ##[error]Process completed with exit code 1.

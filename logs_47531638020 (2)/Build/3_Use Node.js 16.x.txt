@@ -1,0 +1,21 @@
+﻿2025-10-13T20:56:22.9503896Z ##[group]Run actions/setup-node@v3
+2025-10-13T20:56:22.9504347Z with:
+2025-10-13T20:56:22.9504524Z   node-version: 16.x
+2025-10-13T20:56:22.9504709Z   cache: npm
+2025-10-13T20:56:22.9504877Z   always-auth: false
+2025-10-13T20:56:22.9505060Z   check-latest: false
+2025-10-13T20:56:22.9505371Z   token: ***
+2025-10-13T20:56:22.9505547Z ##[endgroup]
+2025-10-13T20:56:23.1761797Z Attempting to download 16.x...
+2025-10-13T20:56:23.8849332Z Acquiring 16.20.2 - x64 from https://github.com/actions/node-versions/releases/download/16.20.2-5819740093/node-16.20.2-linux-x64.tar.gz
+2025-10-13T20:56:24.3780000Z Extracting ...
+2025-10-13T20:56:24.3882650Z [command]/usr/bin/tar xz --strip 1 --warning=no-unknown-keyword -C /home/runner/work/_temp/95a3d3ad-6e78-43e5-b1d0-23586fa3e2a0 -f /home/runner/work/_temp/d9451cbc-69f7-4460-b071-94ce1416bb80
+2025-10-13T20:56:25.0479727Z Adding to the cache ...
+2025-10-13T20:56:26.0938798Z ##[group]Environment details
+2025-10-13T20:56:26.3910314Z node: v16.20.2
+2025-10-13T20:56:26.3910722Z npm: 8.19.4
+2025-10-13T20:56:26.3911005Z yarn: 1.22.22
+2025-10-13T20:56:26.3911419Z ##[endgroup]
+2025-10-13T20:56:26.3920951Z [command]/opt/hostedtoolcache/node/16.20.2/x64/bin/npm config get cache
+2025-10-13T20:56:26.6314849Z /home/runner/.npm
+2025-10-13T20:56:26.9045674Z npm cache is not found

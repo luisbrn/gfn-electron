@@ -1,0 +1,44 @@
+﻿2025-10-13T20:56:17.5914353Z Current runner version: '2.328.0'
+2025-10-13T20:56:17.5939241Z ##[group]Runner Image Provisioner
+2025-10-13T20:56:17.5940079Z Hosted Compute Agent
+2025-10-13T20:56:17.5940759Z Version: 20250912.392
+2025-10-13T20:56:17.5941343Z Commit: d921fda672a98b64f4f82364647e2f10b2267d0b
+2025-10-13T20:56:17.5942053Z Build Date: 2025-09-12T15:23:14Z
+2025-10-13T20:56:17.5942685Z ##[endgroup]
+2025-10-13T20:56:17.5943241Z ##[group]Operating System
+2025-10-13T20:56:17.5944101Z Ubuntu
+2025-10-13T20:56:17.5944627Z 24.04.3
+2025-10-13T20:56:17.5945130Z LTS
+2025-10-13T20:56:17.5945557Z ##[endgroup]
+2025-10-13T20:56:17.5946118Z ##[group]Runner Image
+2025-10-13T20:56:17.5946673Z Image: ubuntu-24.04
+2025-10-13T20:56:17.5947231Z Version: 20250929.60.1
+2025-10-13T20:56:17.5948198Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20250929.60/images/ubuntu/Ubuntu2404-Readme.md
+2025-10-13T20:56:17.5949670Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20250929.60
+2025-10-13T20:56:17.5950882Z ##[endgroup]
+2025-10-13T20:56:17.5953552Z ##[group]GITHUB_TOKEN Permissions
+2025-10-13T20:56:17.5955737Z Actions: write
+2025-10-13T20:56:17.5956457Z Attestations: write
+2025-10-13T20:56:17.5956962Z Checks: write
+2025-10-13T20:56:17.5957470Z Contents: write
+2025-10-13T20:56:17.5958034Z Deployments: write
+2025-10-13T20:56:17.5958555Z Discussions: write
+2025-10-13T20:56:17.5959072Z Issues: write
+2025-10-13T20:56:17.5959624Z Metadata: read
+2025-10-13T20:56:17.5960147Z Models: read
+2025-10-13T20:56:17.5960621Z Packages: write
+2025-10-13T20:56:17.5961218Z Pages: write
+2025-10-13T20:56:17.5961686Z PullRequests: write
+2025-10-13T20:56:17.5962269Z RepositoryProjects: write
+2025-10-13T20:56:17.5962864Z SecurityEvents: write
+2025-10-13T20:56:17.5963720Z Statuses: write
+2025-10-13T20:56:17.5964250Z ##[endgroup]
+2025-10-13T20:56:17.5966412Z Secret source: Actions
+2025-10-13T20:56:17.5967176Z Prepare workflow directory
+2025-10-13T20:56:17.6292826Z Prepare all required actions
+2025-10-13T20:56:17.6349892Z Getting action download info
+2025-10-13T20:56:18.1082023Z Download action repository 'actions/checkout@v3' (SHA:f43a0e5ff2bd294095638e18286ca9a3d1956744)
+2025-10-13T20:56:19.0028017Z Download action repository 'actions/setup-node@v3' (SHA:3235b876344d2a9aa001b8d1453c930bba69e610)
+2025-10-13T20:56:19.1510292Z Download action repository 'codecov/codecov-action@v3' (SHA:ab904c41d6ece82784817410c45d8b8c02684457)
+2025-10-13T20:56:20.0293453Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2025-10-13T20:56:20.3249537Z Complete job name: Build

@@ -14,11 +14,14 @@ describe('rpc TTL and initializeRPC tests', () => {
     const gameName = 'Expiring Game';
     // seed cache with an old timestamp (older than TTL)
     const now = Date.now();
-    const oldTs = now - (rpc._test && rpc.CACHE_TTL_MS ? rpc.CACHE_TTL_MS + 1000 : 1000 * 60 * 60 * 24 * 31);
+    const oldTs =
+      now - (rpc._test && rpc.CACHE_TTL_MS ? rpc.CACHE_TTL_MS + 1000 : 1000 * 60 * 60 * 24 * 31);
     rpc._test.setGameCache({ [gameName]: { id: '555', ts: oldTs } });
 
     // mock axios to return a matching result when re-queried
-    axios.get.mockResolvedValue({ data: '<a data-ds-appid="777"><div class="title">Expiring Game</div></a>' });
+    axios.get.mockResolvedValue({
+      data: '<a data-ds-appid="777"><div class="title">Expiring Game</div></a>',
+    });
 
     // call getSteamAppId which should detect expired cache and call axios
     const id = await rpc.getSteamAppId(gameName);
@@ -31,10 +34,10 @@ describe('rpc TTL and initializeRPC tests', () => {
     const origDisable = process.env.DISABLE_RPC;
     const origIpc = process.env.DISCORD_DISABLE_IPC;
     try {
-  process.env.DISABLE_RPC = 'true';
-  rpc.initializeRPC();
-  // When DISABLE_RPC is set, client should be null
-  expect(rpc).toBeDefined();
+      process.env.DISABLE_RPC = 'true';
+      rpc.initializeRPC();
+      // When DISABLE_RPC is set, client should be null
+      expect(rpc).toBeDefined();
 
       process.env.DISABLE_RPC = origDisable;
       process.env.DISCORD_DISABLE_IPC = 'true';
