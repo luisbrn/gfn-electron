@@ -91,6 +91,30 @@ Useful scripts for development:
   - [Gamepad controls are not detected](https://github.com/hmlendea/gfn-electron/wiki/Troubleshooting#gamepad-controls-are-not-detected)
   - [Steam Deck controls are not detected](https://github.com/hmlendea/gfn-electron/wiki/Troubleshooting#steam-deck-controls-are-not-detected)
 
+# Developer / testing notes
+
+Quick notes for contributors and CI:
+
+- To temporarily disable Discord Rich Presence (RPC) for a run:
+
+```fish
+# Disable for this run
+DISABLE_RPC=true npm start
+```
+
+- Persistent disable: create `scripts/local-config.js` with `module.exports = { DISABLE_RPC: true }` (file is gitignored).
+
+- Run unit tests locally (Jest):
+
+```fish
+npm ci
+npm run test:unit --if-present
+# or for coverage
+npx jest --coverage --runInBand
+```
+
+- Note: CI uses Node 20 and tests are configured to ignore `dist/**` (see `jest.config.js`) so built artifacts do not affect test discovery or coverage.
+
 # Building from source
 
 ## Requirements
