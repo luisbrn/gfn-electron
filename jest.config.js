@@ -1,7 +1,7 @@
 module.exports = {
   testEnvironment: 'node',
-  testPathIgnorePatterns: ["<rootDir>/dist/", "<rootDir>/dist/.*"],
-  coveragePathIgnorePatterns: ["<rootDir>/dist/", "<rootDir>/node_modules/"],
+  testPathIgnorePatterns: ['<rootDir>/dist/', '<rootDir>/dist/.*'],
+  coveragePathIgnorePatterns: ['<rootDir>/dist/', '<rootDir>/node_modules/'],
   coverageThreshold: {
     // conservative defaults to avoid failing existing CI while still protecting coverage
     global: {
