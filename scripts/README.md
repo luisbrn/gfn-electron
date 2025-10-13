@@ -136,6 +136,29 @@ Run without Discord integration:
 npm start -- --disable-rpc
 ```
 
+#### Disabling Discord Rich Presence (RPC)
+
+You can disable Discord Rich Presence if you don't want the app to attempt to connect to a running Discord client.
+
+- Environment variable (temporary):
+
+```fish
+# Disable for this run
+DISABLE_RPC=true npm start
+```
+
+- Persistent (local configuration — not committed):
+
+Create `scripts/local-config.js` (it is gitignored) and add:
+
+```javascript
+module.exports = {
+  DISABLE_RPC: true,
+};
+```
+
+The application will honor either method and skip initializing Discord RPC when set.
+
 ## Testing
 
 ### Steam Scraper Test
@@ -248,7 +271,7 @@ The system uses **Cheerio** for robust HTML parsing instead of fragile regex pat
 
 Enable debug logging to see:
 
-```
+```text
 Cache file resolution and loading
 Steam search URLs and responses
 Game name normalization process

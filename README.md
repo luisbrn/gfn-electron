@@ -1,7 +1,9 @@
-[![Donate](https://img.shields.io/badge/-%E2%99%A5%20Donate-%23ff69b4)](https://hmlendea.go.ro/fund.html) [![Build Status](https://github.com/hmlendea/gfn-electron/actions/workflows/node.js.yml/badge.svg)](https://github.com/hmlendea/gfn-electron/actions/workflows/node.js.yml) [![Latest GitHub release](https://img.shields.io/github/v/release/hmlendea/gfn-electron)](https://github.com/hmlendea/gfn-electron/releases/latest)
-[![Codecov](https://img.shields.io/codecov/c/gh/luisbrn/gfn-electron?logo=codecov)](https://codecov.io/gh/luisbrn/gfn-electron)
+# GeForce Now Electron
 
-# NO LONGER DISCONTINUED
+[![Donate](https://img.shields.io/badge/-%E2%99%A5%20Donate-%23ff69b4)](https://hmlendea.go.ro/fund.html) ![CI](https://github.com/luisbrn/gfn-electron/actions/workflows/node.js.yml/badge.svg) [![codecov](https://codecov.io/gh/luisbrn/gfn-electron/branch/main/graph/badge.svg)](https://codecov.io/gh/luisbrn/gfn-electron) [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md) ![node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)
+[![Latest GitHub release](https://img.shields.io/github/v/release/hmlendea/gfn-electron)](https://github.com/hmlendea/gfn-electron/releases/latest)
+
+## NO LONGER DISCONTINUED
 
 Hi everyone!
 
@@ -11,7 +13,7 @@ Thanks for everyone's support!
 
 ---
 
-# About
+## About
 
 Unofficial client for Nvidia's GeForce NOW game streaming service, providing a native Linux desktop experience and some additional features such as Discord rich presence.
 
@@ -23,11 +25,11 @@ This project and its contributors are not affiliated with Nvidia, nor its GeForc
 
 ## Developers
 
-Founder & Owner: Horațiu Mlendea (https://github.com/hmlendea)
+Founder & Owner: [Horațiu Mlendea](https://github.com/hmlendea)
 
-Maintainer: Goldy Yan (https://github.com/Cybertaco360)
+Maintainer: [Goldy Yan](https://github.com/Cybertaco360)
 
-# Installation
+## Installation
 
 [![Get it from the AUR](https://raw.githubusercontent.com/hmlendea/readme-assets/master/badges/stores/aur.png)](https://aur.archlinux.org/packages/geforcenow-electron/) [![Get it from FlatHub](https://raw.githubusercontent.com/hmlendea/readme-assets/master/badges/stores/flathub.png)](https://flathub.org/apps/details/io.github.hmlendea.geforcenow-electron)
 
@@ -40,7 +42,7 @@ Maintainer: Goldy Yan (https://github.com/Cybertaco360)
 
 **\*Note**: Manual installations are possible but not supported. Please use the flatpak version if you have any trouble with the manual installation!\*
 
-# Usage
+## Usage
 
 - [Basic usage](https://github.com/hmlendea/gfn-electron/wiki/Basic-usage)
   - [Keyboard shortcuts](https://github.com/hmlendea/gfn-electron/wiki/Basic-usage#keyboard-shortcuts)
@@ -56,26 +58,7 @@ Maintainer: Goldy Yan (https://github.com/Cybertaco360)
 
 ## Disabling Discord Rich Presence (RPC)
 
-You can disable Discord Rich Presence if you don't want the app to attempt to connect to a running Discord client.
-
-1. Environment variable (temporary):
-
-```fish
-# Disable for this run
-DISABLE_RPC=true npm start
-```
-
-2. Persistent (local configuration — not committed):
-
-Create `scripts/local-config.js` (it is gitignored) and add:
-
-```javascript
-module.exports = {
-  DISABLE_RPC: true,
-};
-```
-
-The application will honor either method and skip initializing Discord RPC when set.
+The detailed disabling instructions and configuration for Discord Rich Presence are maintained in `scripts/README.md`. See that file for temporary and persistent disable options, asset setup, and troubleshooting.
 
 ## Developer npm scripts
 
@@ -91,18 +74,11 @@ Useful scripts for development:
   - [Gamepad controls are not detected](https://github.com/hmlendea/gfn-electron/wiki/Troubleshooting#gamepad-controls-are-not-detected)
   - [Steam Deck controls are not detected](https://github.com/hmlendea/gfn-electron/wiki/Troubleshooting#steam-deck-controls-are-not-detected)
 
-# Developer / testing notes
+## Developer / testing notes
 
 Quick notes for contributors and CI:
 
-- To temporarily disable Discord Rich Presence (RPC) for a run:
-
-```fish
-# Disable for this run
-DISABLE_RPC=true npm start
-```
-
-- Persistent disable: create `scripts/local-config.js` with `module.exports = { DISABLE_RPC: true }` (file is gitignored).
+- For Discord Rich Presence configuration and disable instructions see [scripts/README.md#disabling-discord-rich-presence-rpc](scripts/README.md#disabling-discord-rich-presence-rpc).
 
 - Run unit tests locally (Jest):
 
@@ -115,7 +91,7 @@ npx jest --coverage --runInBand
 
 - Note: CI uses Node 20 and tests are configured to ignore `dist/**` (see `jest.config.js`) so built artifacts do not affect test discovery or coverage.
 
-# Building from source
+## Building from source
 
 ## Requirements
 
@@ -148,7 +124,7 @@ git pull
 npm install
 ```
 
-# Links
+## Links
 
 - [GeForce NOW](https://nvidia.com/en-eu/geforce-now)
 - [FlatHub release](https://flathub.org/apps/details/io.github.hmlendea.geforcenow-electron)
