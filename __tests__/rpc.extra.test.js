@@ -12,12 +12,9 @@ describe('rpc additional tests', () => {
 
   test('requestWithBackoff retries then succeeds', async () => {
     const error = new Error('network');
-    axios.get
-      .mockRejectedValueOnce(error)
-      .mockRejectedValueOnce(error)
-      .mockResolvedValue({
-        data: '<a data-ds-appid="999"><div class="title">Retry Game</div></a>',
-      });
+    axios.get.mockRejectedValueOnce(error).mockRejectedValueOnce(error).mockResolvedValue({
+      data: '<a data-ds-appid="999"><div class="title">Retry Game</div></a>',
+    });
 
     const resp = await requestWithBackoff('http://example.invalid');
     expect(resp).toBeDefined();

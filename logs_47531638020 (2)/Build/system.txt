@@ -1,5 +1,0 @@
-2025-10-13T20:56:15.0160000Z Job is about to start running on the hosted runner: GitHub Actions 1000002380
-2025-10-13T20:56:15.0150000Z Job is waiting for a hosted runner to come online.
-2025-10-13T20:56:15.0130000Z Requested labels: ubuntu-latest
-2025-10-13T20:56:15.0130000Z Job defined at: luisbrn/gfn-electron/.github/workflows/node.js.yml@refs/heads/steam-rpc-feature
-2025-10-13T20:56:15.0130000Z Waiting for a runner to pick up this job...

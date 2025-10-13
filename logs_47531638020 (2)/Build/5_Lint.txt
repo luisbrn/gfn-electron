@@ -1,8 +1,0 @@
-﻿2025-10-13T20:56:47.1959985Z ##[group]Run npm run lint --if-present
-2025-10-13T20:56:47.1960310Z [36;1mnpm run lint --if-present[0m
-2025-10-13T20:56:47.1992175Z shell: /usr/bin/bash -e {0}
-2025-10-13T20:56:47.1992408Z ##[endgroup]
-2025-10-13T20:56:47.4493952Z 
-2025-10-13T20:56:47.4494567Z > geforcenow-electron@2.2.0 lint
-2025-10-13T20:56:47.4495098Z > eslint . --ext .js
-2025-10-13T20:56:47.4495353Z 
