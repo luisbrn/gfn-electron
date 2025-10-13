@@ -1,6 +1,5 @@
 const { getSteamAppId } = require('../scripts/rpc');
 const axios = require('axios');
-const cheerio = require('cheerio');
 
 jest.mock('axios');
 
