@@ -31,11 +31,10 @@ describe('rpc TTL and initializeRPC tests', () => {
     const origDisable = process.env.DISABLE_RPC;
     const origIpc = process.env.DISCORD_DISABLE_IPC;
     try {
-      process.env.DISABLE_RPC = 'true';
-      rpc.initializeRPC();
-      // When DISABLE_RPC is set, client should be null
-      const cache = rpc._test.getGameCache();
-      expect(rpc).toBeDefined();
+  process.env.DISABLE_RPC = 'true';
+  rpc.initializeRPC();
+  // When DISABLE_RPC is set, client should be null
+  expect(rpc).toBeDefined();
 
       process.env.DISABLE_RPC = origDisable;
       process.env.DISCORD_DISABLE_IPC = 'true';

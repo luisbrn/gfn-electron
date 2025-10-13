@@ -34,7 +34,7 @@ jobs:
         npm run test:unit --if-present
     - name: Coverage
       run: |
-        npm run coverage --if-present
+        npx jest --coverage --runInBand
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
