@@ -6,3 +6,7 @@ scripts/local-config.js
 scripts/local-config.js
 
 coverage/
+
+# Ignore contributor-facing docs that are maintained externally
+PR_DESCRIPTION.md
+CONTRIBUTING.md
