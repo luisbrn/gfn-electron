@@ -1,8 +1,18 @@
 {
   "env": {
     "node": true,
-    "es2021": true
+    "es2021": true,
+    "jest": true
   },
+  "overrides": [
+    {
+      "files": ["**/__tests__/**/*.js", "**/*.test.js"],
+      "env": {
+        "jest": true,
+        "node": true
+      }
+    }
+  ],
   "extends": "eslint:recommended",
   "parserOptions": {
     "ecmaVersion": 12
