@@ -23,6 +23,8 @@ jobs:
         cache: 'npm'
     - name: Install dependencies
       run: npm ci
+    - name: Audit dependencies (non-blocking)
+      run: npm audit --audit-level=moderate || true
     - name: Lint
       run: npm run lint --if-present
     - name: Format check
@@ -35,6 +37,8 @@ jobs:
     - name: Coverage
       run: |
         npx jest --coverage --runInBand
+    - name: Show coverage files
+      run: ls -la coverage || true
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v5
       with:

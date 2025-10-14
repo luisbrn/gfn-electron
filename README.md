@@ -1,6 +1,6 @@
 # GeForce Now Electron
 
-[![Donate](https://img.shields.io/badge/-%E2%99%A5%20Donate-%23ff69b4)](https://hmlendea.go.ro/fund.html) ![CI](https://github.com/luisbrn/gfn-electron/actions/workflows/node.js.yml/badge.svg) [![coverage (steam-rpc-feature)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature/graph/badge.svg)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature) [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md) ![node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)
+[CI](https://github.com/luisbrn/gfn-electron/actions/workflows/node.js.yml/badge.svg) [![coverage (steam-rpc-feature)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature/graph/badge.svg)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature) [![license](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE.md) ![node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)
 [![Latest GitHub release](https://img.shields.io/github/v/release/hmlendea/gfn-electron)](https://github.com/hmlendea/gfn-electron/releases/latest)
 
 ## NO LONGER DISCONTINUED
