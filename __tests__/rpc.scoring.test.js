@@ -1,5 +1,3 @@
-const axios = require('axios');
-
 // Prevent real discord-rich-presence from creating background sockets/events during tests
 jest.mock('discord-rich-presence', () => {
   return function mockClient(id) {
