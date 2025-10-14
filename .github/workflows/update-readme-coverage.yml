@@ -3,7 +3,7 @@ name: Update README Coverage
 on:
   workflow_dispatch:
   push:
-    branches: [ steam-rpc-feature, master ]
+    branches: [steam-rpc-feature, master]
 
 jobs:
   update-readme:
@@ -17,11 +17,20 @@ jobs:
           npm ci
           npx jest --coverage --runInBand
 
+      - name: Show coverage files
+        run: |
+          echo "Coverage directory listing:" && ls -la coverage || true
+
       - name: Read coverage percentage
         id: cov
         run: |
-          # extract branch coverage percent from coverage/coverage-summary.json
-          pct=$(node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('coverage/coverage-summary.json'));console.log((r.total.branches.pct).toFixed(2));")
+          # extract branch coverage percent from coverage/coverage-summary.json if present
+          if [ -f coverage/coverage-summary.json ]; then
+            pct=$(node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('coverage/coverage-summary.json'));console.log((r.total.branches.pct).toFixed(2));")
+          else
+            echo "coverage summary not found; defaulting to 0.00"
+            pct=0.00
+          fi
           echo "coverage=$pct" >> $GITHUB_OUTPUT
 
       - name: Update README
