@@ -1,6 +1,6 @@
 # GeForce Now Electron
 
-[![Donate](https://img.shields.io/badge/-%E2%99%A5%20Donate-%23ff69b4)](https://hmlendea.go.ro/fund.html) ![CI](https://github.com/luisbrn/gfn-electron/actions/workflows/node.js.yml/badge.svg) [![codecov](https://codecov.io/gh/luisbrn/gfn-electron/branch/main/graph/badge.svg)](https://codecov.io/gh/luisbrn/gfn-electron) [![coverage (steam-rpc-feature)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature/graph/badge.svg)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature) [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md) ![node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)
+[![Donate](https://img.shields.io/badge/-%E2%99%A5%20Donate-%23ff69b4)](https://hmlendea.go.ro/fund.html) ![CI](https://github.com/luisbrn/gfn-electron/actions/workflows/node.js.yml/badge.svg) [![codecov (upstream main)](https://codecov.io/gh/hmlendea/gfn-electron/branch/main/graph/badge.svg)](https://codecov.io/gh/hmlendea/gfn-electron/branch/main) [![coverage (steam-rpc-feature)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature/graph/badge.svg)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature) [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md) ![node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)
 [![Latest GitHub release](https://img.shields.io/github/v/release/hmlendea/gfn-electron)](https://github.com/hmlendea/gfn-electron/releases/latest)
 
 ## NO LONGER DISCONTINUED
@@ -74,7 +74,7 @@ Quick notes for contributors and CI:
 
 - For Discord Rich Presence configuration and disable instructions see [scripts/README.md#disabling-discord-rich-presence-rpc](scripts/README.md#disabling-discord-rich-presence-rpc).
 
-- Branch coverage (steam-rpc-feature): **59.80%** — ![codecov](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature/graph/badge.svg)
+- Branch coverage (steam-rpc-feature): **59.80%** — [![codecov (steam-rpc-feature)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature/graph/badge.svg)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature)
 
 - Run unit tests locally (Jest):
 
