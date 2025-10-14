@@ -80,6 +80,8 @@ Quick notes for contributors and CI:
 
 - For Discord Rich Presence configuration and disable instructions see [scripts/README.md#disabling-discord-rich-presence-rpc](scripts/README.md#disabling-discord-rich-presence-rpc).
 
+- Branch coverage (steam-rpc-feature): **59.80%** — ![codecov](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature/graph/badge.svg)
+
 - Run unit tests locally (Jest):
 
 ```fish
