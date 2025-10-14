@@ -37,6 +37,10 @@ jobs:
       - name: Coverage
         run: |
           npx jest --coverage --runInBand
+      - name: Ensure coverage directory exists
+        run: |
+          mkdir -p coverage
+          echo "coverage dir ensured"
       - name: Show coverage files
         run: ls -la coverage || true
       - name: Upload coverage to Codecov
