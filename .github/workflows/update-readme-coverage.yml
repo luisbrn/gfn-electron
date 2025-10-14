@@ -1,0 +1,40 @@
+name: Update README Coverage
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ steam-rpc-feature, master ]
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run tests and collect coverage
+        run: |
+          npm ci
+          npx jest --coverage --runInBand
+
+      - name: Read coverage percentage
+        id: cov
+        run: |
+          # extract branch coverage percent from coverage/coverage-summary.json
+          pct=$(node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('coverage/coverage-summary.json'));console.log((r.total.branches.pct).toFixed(2));")
+          echo "coverage=$pct" >> $GITHUB_OUTPUT
+
+      - name: Update README
+        env:
+          README_UPDATE_TOKEN: ${{ secrets.README_UPDATE_TOKEN }}
+        run: |
+          if [ -z "${README_UPDATE_TOKEN}" ]; then
+            echo "README_UPDATE_TOKEN not set; skipping README update"
+            exit 0
+          fi
+          node scripts/update_readme_coverage.js ${{ steps.cov.outputs.coverage }}
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add README.md
+          git commit -m "ci: update README coverage to ${{ steps.cov.outputs.coverage }}%" || echo "no changes"
+          git push https://x-access-token:${README_UPDATE_TOKEN}@github.com/${{ github.repository }} HEAD:${{ github.ref_name }}

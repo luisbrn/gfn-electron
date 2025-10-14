@@ -1,4 +1,3 @@
-const path = require('path');
 jest.resetModules();
 
 describe('discord-rich-presence mocking', () => {
@@ -21,7 +20,7 @@ describe('discord-rich-presence mocking', () => {
   test('initializes client when discord-rich-presence returns a client object', async () => {
     // Mock fs probing to indicate an IPC socket exists
     const fs = require('fs');
-    jest.spyOn(fs, 'existsSync').mockImplementation(p => true);
+    jest.spyOn(fs, 'existsSync').mockImplementation(() => true);
 
     // Provide a mock module for discord-rich-presence
     jest.mock('discord-rich-presence', () => {
@@ -29,7 +28,7 @@ describe('discord-rich-presence mocking', () => {
         return {
           id,
           updatePresence: jest.fn(),
-          on: jest.fn((ev, cb) => {}),
+          on: jest.fn(),
         };
       };
     });
@@ -50,7 +49,7 @@ describe('discord-rich-presence mocking', () => {
 
   test('handles errors thrown by discord-rich-presence require gracefully', async () => {
     const fs = require('fs');
-    jest.spyOn(fs, 'existsSync').mockImplementation(p => true);
+    jest.spyOn(fs, 'existsSync').mockImplementation(() => true);
 
     // Make require('discord-rich-presence') throw
     jest.mock('discord-rich-presence', () => {
@@ -69,7 +68,7 @@ describe('discord-rich-presence mocking', () => {
 
   test('attaches error handler when client.on exists', async () => {
     const fs = require('fs');
-    jest.spyOn(fs, 'existsSync').mockImplementation(p => true);
+    jest.spyOn(fs, 'existsSync').mockImplementation(() => true);
 
     const mockOn = jest.fn();
     jest.mock('discord-rich-presence', () => {

@@ -1,7 +1,7 @@
 # GeForce Now Electron
 
 [CI](https://github.com/luisbrn/gfn-electron/actions/workflows/node.js.yml/badge.svg) [![coverage (steam-rpc-feature)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature/graph/badge.svg)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature) [![license](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE.md) ![node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)
-[![Latest GitHub release](https://img.shields.io/github/v/release/hmlendea/gfn-electron)](https://github.com/hmlendea/gfn-electron/releases/latest)
+[![Latest GitHub release](https://img.shields.io/github/v/release/luisbrn/gfn-electron)](https://github.com/luisbrn/gfn-electron/releases/latest)
 
 ## NO LONGER DISCONTINUED
 
@@ -75,6 +75,8 @@ Quick notes for contributors and CI:
 - For Discord Rich Presence configuration and disable instructions see [scripts/README.md#disabling-discord-rich-presence-rpc](scripts/README.md#disabling-discord-rich-presence-rpc).
 
 - Branch coverage (steam-rpc-feature): **59.80%** — [![codecov (steam-rpc-feature)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature/graph/badge.svg)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature)
+
+> Note: badges show data for this fork where possible. The release badge now points to this fork's releases; if you'd prefer to show upstream releases instead, I can revert it.
 
 - Run unit tests locally (Jest):
 
