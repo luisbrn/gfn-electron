@@ -365,6 +365,10 @@ module.exports = {
   getSteamAppId,
   requestWithBackoff,
   initializeRPC,
+  normalizeText,
+  isCacheEntryValid,
+  getCacheFilePath,
+  extractGameName,
   _test: {
     setGameCache: _setGameCache,
     getGameCache: _getGameCache,
