@@ -74,7 +74,7 @@ Quick notes for contributors and CI:
 
 - For Discord Rich Presence configuration and disable instructions see [scripts/README.md#disabling-discord-rich-presence-rpc](scripts/README.md#disabling-discord-rich-presence-rpc).
 
-- Branch coverage (steam-rpc-feature): **59.80%** — [![codecov (steam-rpc-feature)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature/graph/badge.svg)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature)
+- Branch coverage (steam-rpc-feature): **82.03%** — [![codecov (steam-rpc-feature)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature/graph/badge.svg)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature)
 
 > Note: badges show data for this fork where possible. The release badge now points to this fork's releases; if you'd prefer to show upstream releases instead, I can revert it.
 
