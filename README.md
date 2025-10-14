@@ -1,7 +1,10 @@
 # GeForce Now Electron
 
-[CI](https://github.com/luisbrn/gfn-electron/actions/workflows/node.js.yml/badge.svg) [![coverage (steam-rpc-feature)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature/graph/badge.svg)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature) [![license](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE.md) ![node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)
-[![Latest GitHub release](https://img.shields.io/github/v/release/luisbrn/gfn-electron)](https://github.com/luisbrn/gfn-electron/releases/latest)
+[![CI](https://github.com/luisbrn/gfn-electron/actions/workflows/node.js.yml/badge.svg)](https://github.com/luisbrn/gfn-electron/actions/workflows/node.js.yml)
+[![coverage (steam-rpc-feature)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature/graph/badge.svg)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature)
+[![Latest release](https://img.shields.io/github/v/release/luisbrn/gfn-electron)](https://github.com/luisbrn/gfn-electron/releases/latest)
+[![license](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE.md)
+[![node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org/)
 
 ## NO LONGER DISCONTINUED
 
