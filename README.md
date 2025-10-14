@@ -7,7 +7,7 @@
 
 Hi everyone!
 
-The owner of this repository had discontinued and archived the project a few weeks ago but the project is back now. I will be continuing to work on this project and we welcome as much help as possible from the community!
+This repository is a maintained fork of the original project. The fork is actively maintained here by [luisbrn](https://github.com/luisbrn). The original author and previous maintainers are credited below. Contributions are welcome — please see the developer workflow notes in `docs/non-pr-fork-workflow.md` for how to contribute to this fork.
 
 Thanks for everyone's support!
 
@@ -19,6 +19,8 @@ Unofficial client for Nvidia's GeForce NOW game streaming service, providing a n
 
 ## About us
 
+This fork is maintained independently from the original project. Where appropriate we credit the original author and upstream maintainers. If you rely on packaged builds (Flatpak / AUR) please check the package maintainer or upstream project for the latest packages.
+
 ## Disclaimer
 
 This project and its contributors are not affiliated with Nvidia, nor its GeForce NOW product. This repository does not contain any Nvidia / GeForce NOW software. It is simply an Electron wrapper that loads the official GFN web application page, just as it would in a regular web browser.
@@ -27,13 +29,15 @@ This project and its contributors are not affiliated with Nvidia, nor its GeForc
 
 Founder & Owner: [Horațiu Mlendea](https://github.com/hmlendea)
 
-Maintainer: [Goldy Yan](https://github.com/Cybertaco360)
+Previous maintainer: [Goldy Yan](https://github.com/Cybertaco360)
+
+Maintainer (this fork): [luisbrn](https://github.com/luisbrn)
 
 ## Installation
 
-[![Get it from the AUR](https://raw.githubusercontent.com/hmlendea/readme-assets/master/badges/stores/aur.png)](https://aur.archlinux.org/packages/geforcenow-electron/) [![Get it from FlatHub](https://raw.githubusercontent.com/hmlendea/readme-assets/master/badges/stores/flathub.png)](https://flathub.org/apps/details/io.github.hmlendea.geforcenow-electron)
+Packages for different distributions are provided by third parties or upstream maintainers. This fork focuses on source releases and fork-specific maintenance. See the Releases page for the latest assets for this fork: [Releases page](https://github.com/luisbrn/gfn-electron/releases)
 
-**\*Note**: The main version of this project, which receives the most support, is the flatpak version hosted on FlatHub!\*
+**Note**: If you use distribution packages (AUR, Flatpak, etc.) please check the package maintainer for support.
 
 ## Manual Installation
 
@@ -97,10 +101,10 @@ You will need to install [npm](https://www.npmjs.com/), the Node.js package mana
 
 ## Cloning the source code
 
-Once you have npm, clone the wrapper to a convenient location:
+Once you have npm, clone this fork to a convenient location:
 
 ```bash
-git clone https://github.com/hmlendea/gfn-electron.git
+git clone https://github.com/luisbrn/gfn-electron.git
 ```
 
 ## Building
