@@ -64,24 +64,33 @@ describe('initializeRPC fallback and local-config', () => {
 
   test('initializeRPC loads game_cache_common.json fallback', () => {
     const common = { 'Fallback Game': { id: '99999', ts: Date.now() } };
-    fs.writeFileSync(commonCachePath, JSON.stringify(common), 'utf8');
 
     jest.isolateModules(() => {
-      // ensure we start with a clean module registry and no stale local-config mock
+      // mock fs so CACHE_FILE appears missing and the common cache is present
       jest.resetModules();
-      try {
-        if (fs.existsSync(repoCachePath) && !fs.existsSync(repoCacheBackup)) {
-          fs.renameSync(repoCachePath, repoCacheBackup);
-        }
-      } catch (e) {
-        // ignore file movement failures in test
-      }
+      const path = require('path');
+      const scriptsDirLocal = path.join(__dirname, '..', 'scripts');
+      const repoCache = path.join(__dirname, '..', 'game_cache.json');
+      const commonCache = path.join(scriptsDirLocal, 'game_cache_common.json');
 
-      // override local-config with an empty object to avoid DISABLE_RPC bleeding from other tests
+      jest.doMock('fs', () => ({
+        existsSync: p => {
+          if (p === repoCache) return false;
+          if (p === commonCache) return true;
+          return false;
+        },
+        readFileSync: p => {
+          if (p === commonCache) return JSON.stringify(common);
+          throw new Error('unexpected read');
+        },
+        writeFileSync: () => {},
+      }));
+
+      // ensure local-config does not disable RPC
       try {
         jest.unmock('../scripts/local-config.js');
       } catch (e) {
-        // ignore if not previously mocked
+        // ignore
       }
       jest.doMock('../scripts/local-config.js', () => ({}), { virtual: true });
 
