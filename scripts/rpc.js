@@ -208,6 +208,10 @@ function _setClient(c) {
   client = c;
 }
 
+function _getClient() {
+  return client;
+}
+
 function _setInitialized(v) {
   isInitialized = !!v;
 }
@@ -365,6 +369,7 @@ module.exports = {
     setGameCache: _setGameCache,
     getGameCache: _getGameCache,
     setClient: _setClient,
+    getClient: _getClient,
     setInitialized: _setInitialized,
   },
 };
