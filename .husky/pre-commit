@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Run formatter and linter before commit
+npm run format:check --if-present
+npm run lint --if-present

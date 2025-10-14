@@ -35,7 +35,6 @@ describe('initializeRPC guard behavior', () => {
     // The fake client should not have been used because RPC was disabled
     // The client should be null (disabled) after initialization when DISABLE_RPC is set
     expect(rpc._test.getClient()).toBeNull();
-
   });
 
   test('initializeRPC respects DISCORD_DISABLE_IPC environment variable', async () => {
@@ -45,6 +44,5 @@ describe('initializeRPC guard behavior', () => {
 
     // If DISCORD_DISABLE_IPC is set the RPC client should be null (not initialized)
     expect(rpc._test.getClient()).toBeNull();
-
   });
 });
