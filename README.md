@@ -51,12 +51,12 @@ Packages for different distributions are provided by third parties or upstream m
 
 ## Usage
 
-- [Basic usage](https://github.com/luisbrn/gfn-electron/wiki/Basic-usage)
-  - [Keyboard shortcuts](https://github.com/luisbrn/gfn-electron/wiki/Basic-usage#keyboard-shortcuts)
-  - [Command-line arguments](https://github.com/luisbrn/gfn-electron/wiki/Basic-usage#command-line-arguments)
-  - [Changing the keyboard layout](https://github.com/luisbrn/gfn-electron/wiki/Basic-usage#changing-the-keyboard-layout)
-  - [Directly launching a game from the desktop](https://github.com/luisbrn/gfn-electron/wiki/Basic-usage#directly-launching-a-game-from-the-desktop)
-- [Integrations](https://github.com/luisbrn/gfn-electron/wiki/Integrations)
+- [Basic usage](docs/Basic-usage.md)
+  - [Keyboard shortcuts](docs/Basic-usage.md#keyboard-shortcuts)
+  - [Command-line arguments](docs/Basic-usage.md#command-line-arguments)
+  - [Changing the keyboard layout](docs/Basic-usage.md#changing-the-keyboard-layout)
+  - [Directly launching a game from the desktop](docs/Basic-usage.md#directly-launching-a-game-from-the-desktop)
+- [Integrations](docs/Integrations.md)
   - [Discord (Rich Presence details & disable instructions)](scripts/README.md#disabling-discord-rich-presence-rpc)
 
 <!-- Discord Rich Presence details moved to scripts/README.md (single source of truth) -->
