@@ -1,6 +1,6 @@
 # GeForce Now Electron
 
-[![Donate](https://img.shields.io/badge/-%E2%99%A5%20Donate-%23ff69b4)](https://hmlendea.go.ro/fund.html) ![CI](https://github.com/luisbrn/gfn-electron/actions/workflows/node.js.yml/badge.svg) [![codecov](https://codecov.io/gh/luisbrn/gfn-electron/branch/main/graph/badge.svg)](https://codecov.io/gh/luisbrn/gfn-electron) [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md) ![node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)
+[![Donate](https://img.shields.io/badge/-%E2%99%A5%20Donate-%23ff69b4)](https://hmlendea.go.ro/fund.html) ![CI](https://github.com/luisbrn/gfn-electron/actions/workflows/node.js.yml/badge.svg) [![codecov](https://codecov.io/gh/luisbrn/gfn-electron/branch/main/graph/badge.svg)](https://codecov.io/gh/luisbrn/gfn-electron) [![coverage (steam-rpc-feature)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature/graph/badge.svg)](https://codecov.io/gh/luisbrn/gfn-electron/branch/steam-rpc-feature) [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md) ![node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)
 [![Latest GitHub release](https://img.shields.io/github/v/release/hmlendea/gfn-electron)](https://github.com/hmlendea/gfn-electron/releases/latest)
 
 ## NO LONGER DISCONTINUED
@@ -50,15 +50,9 @@ Maintainer: [Goldy Yan](https://github.com/Cybertaco360)
   - [Changing the keyboard layout](https://github.com/hmlendea/gfn-electron/wiki/Basic-usage#changing-the-keyboard-layout)
   - [Directly launching a game from the desktop](https://github.com/hmlendea/gfn-electron/wiki/Basic-usage#directly-launching-a-game-from-the-desktop)
 - [Integrations](https://github.com/hmlendea/gfn-electron/wiki/Integrations)
-  - [Discord](https://github.com/hmlendea/gfn-electron/wiki/Integrations#discord)
-    - [Using native GFN + flatpak Discord](https://github.com/hmlendea/gfn-electron/wiki/Integrations#using-native-gfn--flatpak-discord)
-    - [Setting up a Discord Client ID](https://github.com/hmlendea/gfn-electron/wiki/Integrations#setting-up-a-discord-client-id)
-    - [Persistent Discord Client ID](scripts/README.md#persistent-client-id-setup-recommended)
-    - [Disabling the Discord RPC](https://github.com/hmlendea/gfn-electron/wiki/Integrations#disabling-the-discord-rpc)
+  - [Discord (Rich Presence details & disable instructions)](scripts/README.md#disabling-discord-rich-presence-rpc)
 
-## Disabling Discord Rich Presence (RPC)
-
-The detailed disabling instructions and configuration for Discord Rich Presence are maintained in `scripts/README.md`. See that file for temporary and persistent disable options, asset setup, and troubleshooting.
+<!-- Discord Rich Presence details moved to scripts/README.md (single source of truth) -->
 
 ## Developer npm scripts
 
