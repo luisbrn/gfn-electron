@@ -9,3 +9,7 @@ coverage/
 # Ignore contributor-facing docs that are maintained externally
 PR_DESCRIPTION.md
 CONTRIBUTING.md
+
+# Runtime artifacts
+game_cache.json
+.changes/
