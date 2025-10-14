@@ -5,7 +5,8 @@ describe('discord-rich-presence mocking', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    // Ensure a fresh module load for each test
+    // Ensure we load the module fresh each test, picking up any per-test jest.mock calls
+    jest.resetModules();
     rpc = require('../scripts/rpc');
     rpc._test.setGameCache({});
     rpc._test.setClient(null);
@@ -13,8 +14,10 @@ describe('discord-rich-presence mocking', () => {
   });
 
   afterEach(() => {
-    rpc._test.setInitialized(false);
-    rpc._test.setClient(null);
+    if (rpc && rpc._test) {
+      rpc._test.setInitialized(false);
+      rpc._test.setClient(null);
+    }
   });
 
   test('initializes client when discord-rich-presence returns a client object', async () => {

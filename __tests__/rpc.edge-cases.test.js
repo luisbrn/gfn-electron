@@ -1,4 +1,10 @@
 describe('rpc edge cases', () => {
+  // Prevent real discord-rich-presence from creating background sockets/events during tests
+  jest.mock('discord-rich-presence', () => {
+    return function mockClient() {
+      return { on: () => {}, updatePresence: () => {} };
+    };
+  });
   afterEach(() => {
     jest.resetModules();
     jest.restoreAllMocks();
