@@ -1,0 +1,10 @@
+# Ignore generated coverage reports and local cache
+coverage/
+coverage/**
+
+# Local developer cache
+game_cache.json
+
+# Node modules and build artifacts
+node_modules/
+dist/

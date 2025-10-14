@@ -1,0 +1,10 @@
+/**
+ * scripts/local-config.js.example
+ * Example local configuration for GeForce NOW Electron
+ * Copy to scripts/local-config.js and replace the placeholder with your Discord client ID.
+ */
+
+module.exports = {
+  // Replace with your Discord application client ID from the Discord Developer Portal
+  DISCORD_CLIENT_ID: 'YOUR_CLIENT_ID_HERE'
+};

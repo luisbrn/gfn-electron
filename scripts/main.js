@@ -1,4 +1,4 @@
-const { app, BrowserWindow, session } = require('electron');
+const { app, BrowserWindow } = require('electron');
 const electronLocalshortcut = require('electron-localshortcut');
 const findProcess = require('find-process');
 const fs = require('fs');
@@ -7,18 +7,19 @@ const { DiscordRPC } = require('./rpc.js');
 const { switchFullscreenState } = require('./windowManager.js');
 
 var homePage = 'https://play.geforcenow.com';
-var userAgent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.152 Safari/537.36 Edg/130.0.6723.152';
+var userAgent =
+  'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.152 Safari/537.36 Edg/130.0.6723.152';
 
 console.log('Using user agent: ' + userAgent);
 console.log('Process arguments: ' + process.argv);
 
-app.commandLine.appendSwitch('enable-features', 'VaapiVideoDecoder,WaylandWindowDecorations,RawDraw');
-
 app.commandLine.appendSwitch(
-  'disable-features',
-  'UseChromeOSDirectVideoDecoder'
+  'enable-features',
+  'VaapiVideoDecoder,WaylandWindowDecorations,RawDraw',
 );
-app.commandLine.appendSwitch("enable-features", "AcceleratedVideoDecodeLinuxGL");
+
+app.commandLine.appendSwitch('disable-features', 'UseChromeOSDirectVideoDecoder');
+app.commandLine.appendSwitch('enable-features', 'AcceleratedVideoDecodeLinuxGL');
 app.commandLine.appendSwitch('enable-accelerated-mjpeg-decode');
 app.commandLine.appendSwitch('enable-accelerated-video');
 app.commandLine.appendSwitch('ignore-gpu-blocklist');
@@ -42,11 +43,11 @@ app.commandLine.appendSwitch('enable-gpu-memory-buffer-video-frames');
 
 // When the 'use-gl' switch is functioning correctly, I still encounter the 'GetVSyncParametersIfAvailable() error' three times, but it does not occur thereafter (based on my testing).
 const configPath = path.join(app.getPath('userData'), 'config.json');
-const config = fs.existsSync(configPath) ?
-  JSON.parse(fs.readFileSync(configPath, 'utf-8')) :
-  { crashCount: 0 };
+const config = fs.existsSync(configPath)
+  ? JSON.parse(fs.readFileSync(configPath, 'utf-8'))
+  : { crashCount: 0 };
 
-switch(config.crashCount) {
+switch (config.crashCount) {
   case 0:
     app.commandLine.appendArgument('enable-accelerated-video-decode');
     app.commandLine.appendSwitch('use-gl', 'angle');
@@ -59,9 +60,27 @@ switch(config.crashCount) {
     app.disableHardwareAcceleration();
 }
 
+// CLI: allow forcing ozone platform via --ozone=wayland or --ozone=x11
+const ozoneFlag = process.argv.find(a => a.startsWith('--ozone='));
+if (ozoneFlag) {
+  const value = ozoneFlag.split('=')[1];
+  if (value === 'wayland') {
+    process.env.OZONE_PLATFORM = 'wayland';
+    console.log('OZONE forced to: wayland');
+  } else if (value === 'x11') {
+    process.env.OZONE_PLATFORM = 'x11';
+    console.log('OZONE forced to: x11');
+  }
+}
+
+console.log('Session type:', process.env.XDG_SESSION_TYPE || 'unknown');
+
 async function createWindow() {
   const mainWindow = new BrowserWindow({
     fullscreenable: true,
+    // Try using server-side decorations when explicitly requested or when
+    // client-side decorations misbehave on certain Wayland setups.
+    frame: process.argv.includes('--force-frame') ? true : undefined,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: false,
@@ -70,7 +89,10 @@ async function createWindow() {
   });
 
   if (process.argv.includes('--direct-start')) {
-    mainWindow.loadURL('https://play.geforcenow.com/mall/#/streamer?launchSource=GeForceNOW&cmsId=' + process.argv[process.argv.indexOf('--direct-start') + 1]);
+    mainWindow.loadURL(
+      'https://play.geforcenow.com/mall/#/streamer?launchSource=GeForceNOW&cmsId=' +
+        process.argv[process.argv.indexOf('--direct-start') + 1],
+    );
   } else {
     mainWindow.loadURL(homePage);
   }
@@ -137,20 +159,27 @@ app.on('browser-window-created', async function (e, window) {
 
   if (discordIsRunning) {
     window.on('page-title-updated', async function (e, title) {
-      DiscordRPC(title).catch(console.error);
+      // Guard: ensure DiscordRPC exists and is callable
+      try {
+        DiscordRPC && typeof DiscordRPC === 'function' && DiscordRPC(title);
+      } catch (err) {
+        console.warn('DiscordRPC call failed:', err && err.message ? err.message : err);
+      }
     });
   }
 });
 
 app.on('child-process-gone', (event, details) => {
   if (details.type === 'GPU' && details.reason === 'crashed') {
-      config.crashCount++;
-      fs.writeFileSync(configPath, JSON.stringify(config));
+    config.crashCount++;
+    fs.writeFileSync(configPath, JSON.stringify(config));
 
-      console.log("Initiating application restart with an alternative 'use-gl' switch implementation or with hardware acceleration disabled, aiming to improve stability or performance based on prior execution outcomes.");
+    console.log(
+      "Initiating application restart with an alternative 'use-gl' switch implementation or with hardware acceleration disabled, aiming to improve stability or performance based on prior execution outcomes.",
+    );
 
-      app.relaunch();
-      app.exit(0);
+    app.relaunch();
+    app.exit(0);
   }
 });
 
@@ -166,15 +195,26 @@ app.on('window-all-closed', async function () {
 
 function isDiscordRunning() {
   return new Promise(resolve => {
-      findProcess('name', 'Discord').then(list => {
-          if (list.length > 0) {
-              resolve(true);
-          } else {
-              resolve(false);
-          }
-      }).catch(error => {
-          console.log('Error checking Discord process:', error);
+    // Check for several common Discord process names, case-insensitive
+    const namesToCheck = [
+      'discord',
+      'Discord',
+      'discord-canary',
+      'DiscordCanary',
+      'DiscordPTB',
+      'discord_ptb',
+    ];
+    findProcess('name', namesToCheck.join('|'))
+      .then(list => {
+        if (list && list.length > 0) {
+          resolve(true);
+        } else {
           resolve(false);
+        }
+      })
+      .catch(error => {
+        console.log('Error checking Discord process:', error);
+        resolve(false);
       });
   });
 }

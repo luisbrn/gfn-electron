@@ -1,0 +1,18 @@
+# Basic Codecov configuration
+# See https://docs.codecov.com/docs/codecov-yaml for details
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+    patch:
+      default:
+        target: 0%  # don't fail PRs by default; tune as you adopt coverage
+comments:
+  layout: "reach"
+  require_changes: false
+
+# ignore some paths if needed
+ignore:
+  - "/tests/**"
+  - "/scripts/test-**"
