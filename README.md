@@ -63,6 +63,30 @@ npm start
 - **Custom Artwork** - Downloads and caches game images
 - **Status Updates** - Shows "Playing [Game Name] on GeForce NOW"
 
+### Discord Asset Management
+
+To display game artwork in Discord, you need to upload images to your Discord application:
+
+1. **Go to Discord Developer Portal** → Your Application → "Rich Presence" → "Art Assets"
+2. **Upload Game Images** using Steam App IDs as asset names (e.g., `1240440` for Halo Infinite)
+3. **Use Provided Scripts** to download and process game artwork:
+
+```bash
+# Download poster images for specific games
+node scripts/download_poster.js 1240440  # Halo Infinite
+node scripts/download_poster.js 1938090 # Call of Duty
+
+# Download GFN capsule images (1024x1024 with transparency)
+node scripts/download_gfn_capsule.js 1240440
+
+# Inspect downloaded images
+node scripts/inspect_posters.js
+```
+
+**📁 Pre-made Assets**: Check `scripts/Poster game images/` for 240+ ready-to-use game posters!
+
+> **📖 Detailed Setup**: See [scripts/README.md](scripts/README.md) for complete Discord Rich Presence configuration, asset management, and troubleshooting.
+
 ## ⌨️ Keyboard Shortcuts
 
 | Shortcut           | Action                     |
@@ -98,6 +122,22 @@ npm run format     # Format code with Prettier
 npm run format:check # Check formatting
 npm test           # Run tests
 npm run gen-changelog # Generate changelog
+```
+
+### Discord Asset Tools
+
+```bash
+# Download game posters (512x512)
+node scripts/download_poster.js [SteamAppID]
+
+# Download GFN capsules (1024x1024 with transparency)
+node scripts/download_gfn_capsule.js [SteamAppID]
+
+# Inspect downloaded images
+node scripts/inspect_posters.js
+
+# Test Steam App ID detection
+node scripts/test-steam-scraper.js "Game Name"
 ```
 
 ### Testing
@@ -164,12 +204,24 @@ npm test
 ```
 scripts/
 ├── main.js                 # Main Electron process
-├── rpc.js                  # Discord Rich Presence
+├── rpc.js                  # Discord Rich Presence integration
 ├── settings.js             # Settings management
 ├── gfn-settings-injector.js # UI injection script
 ├── preload.js              # Preload script
-└── windowManager.js        # Window management
+├── windowManager.js        # Window management
+├── download_poster.js      # Download Steam game posters (512x512)
+├── download_gfn_capsule.js # Download GFN capsules (1024x1024)
+├── inspect_posters.js      # Check downloaded image dimensions
+├── test-steam-scraper.js   # Test Steam App ID detection
+└── Poster game images/     # 240+ pre-made game assets
 ```
+
+### Scripts Documentation
+
+- **[scripts/README.md](scripts/README.md)** - Complete Discord Rich Presence setup guide
+- **Asset Management** - How to download and upload game artwork
+- **Steam Integration** - Game detection and App ID lookup
+- **Troubleshooting** - Common issues and debug information
 
 ## 🤝 Contributing
 
