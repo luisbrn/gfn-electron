@@ -40,10 +40,26 @@ function getDiscordClientId() {
 function checkDiscordRunning() {
   return new Promise(resolve => {
     const findProcess = require('find-process');
-    const namesToCheck = ['discord', 'Discord', 'discord-canary', 'DiscordCanary', 'DiscordPTB'];
+    const namesToCheck = [
+      'discord',
+      'Discord',
+      'Discord.exe',
+      'discord-canary',
+      'DiscordCanary',
+      'DiscordCanary.exe',
+      'DiscordPTB',
+      'DiscordPTB.exe',
+      'discord-ptb',
+      'discord-canary',
+      '/opt/discord/Discord',
+      '/usr/bin/discord',
+      'discord-desktop',
+      'DiscordDesktop',
+    ];
 
     findProcess('name', namesToCheck)
       .then(processes => {
+        console.log('Discord detection: Found processes:', processes);
         resolve({
           isRunning: processes.length > 0,
           message:
@@ -54,7 +70,8 @@ function checkDiscordRunning() {
               : 'Discord is not running',
         });
       })
-      .catch(() => {
+      .catch(error => {
+        console.error('Discord detection error:', error);
         resolve({
           isRunning: false,
           message: 'Could not check Discord status',

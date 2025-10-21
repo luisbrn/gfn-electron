@@ -23,8 +23,8 @@ function createSettingsButton() {
 
   settingsButton.style.cssText = `
     position: fixed;
-    top: 12px;
-    right: 12px;
+    top: 60px;
+    right: 20px;
     z-index: 10000;
     background: rgba(26, 29, 31, 0.95);
     color: #00d4aa;
