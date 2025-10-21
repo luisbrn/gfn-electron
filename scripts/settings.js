@@ -39,36 +39,41 @@ function getDiscordClientId() {
 
 function checkDiscordRunning() {
   return new Promise(resolve => {
-    const findProcess = require('find-process');
+    const { exec } = require('child_process');
 
-    // Search for Discord processes by name
-    findProcess('name', [
-      'discord',
-      'Discord',
-      'Discord.exe',
-      'discord-canary',
-      'DiscordCanary',
-      'DiscordPTB',
-    ])
-      .then(processes => {
-        console.log('Discord detection: Found processes:', processes);
-        resolve({
-          isRunning: processes.length > 0,
-          message:
-            processes.length > 0
-              ? `Discord is running (${processes.length} process${
-                  processes.length > 1 ? 'es' : ''
-                } found)`
-              : 'Discord is not running',
-        });
-      })
-      .catch(error => {
+    // Use ps command to find Discord processes (more reliable on Linux)
+    exec('ps aux | grep -i discord | grep -v grep', (error, stdout) => {
+      if (error) {
         console.error('Discord detection error:', error);
         resolve({
           isRunning: false,
           message: 'Could not check Discord status',
         });
+        return;
+      }
+
+      const lines = stdout
+        .trim()
+        .split('\n')
+        .filter(line => line.length > 0);
+      const discordProcesses = lines.filter(
+        line =>
+          line.toLowerCase().includes('discord') &&
+          !line.includes('grep') &&
+          !line.includes('node'),
+      );
+
+      console.log('Discord detection: Found processes:', discordProcesses);
+      resolve({
+        isRunning: discordProcesses.length > 0,
+        message:
+          discordProcesses.length > 0
+            ? `Discord is running (${discordProcesses.length} process${
+                discordProcesses.length > 1 ? 'es' : ''
+              } found)`
+            : 'Discord is not running',
       });
+    });
   });
 }
 
