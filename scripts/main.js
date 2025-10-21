@@ -189,7 +189,16 @@ app.on('child-process-gone', (event, details) => {
 });
 
 app.on('will-quit', async () => {
-  electronLocalshortcut.unregisterAll();
+  try {
+    const windows = BrowserWindow.getAllWindows();
+    windows.forEach(window => {
+      if (window && !window.isDestroyed()) {
+        electronLocalshortcut.unregisterAll(window);
+      }
+    });
+  } catch (e) {
+    // Ignore errors during shutdown
+  }
 });
 
 app.on('window-all-closed', async function () {
