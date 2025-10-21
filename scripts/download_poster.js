@@ -2,7 +2,7 @@
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
-const Jimp = require('jimp');
+const { Jimp } = require('jimp');
 
 async function downloadHeader(appId) {
   // Try several common Steam image endpoints in order of preference.
@@ -45,8 +45,8 @@ async function downloadHeader(appId) {
   console.log('Using image from', usedUrl, 'buffer len', buffer.length);
   const image = await Jimp.read(buffer);
   // Cover will resize and crop to fill 512x512 preserving aspect ratio
-  image.cover(512, 512);
-  await image.writeAsync(outPath);
+  await image.cover({ w: 512, h: 512 });
+  await image.write(outPath);
   console.log('Saved poster (512x512) to', outPath);
 }
 

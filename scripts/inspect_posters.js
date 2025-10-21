@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
-const Jimp = require('jimp');
+const { Jimp } = require('jimp');
 
 const samples = [
   'scripts/Poster game images/6/700330.png',
@@ -17,7 +17,7 @@ const samples = [
       const full = path.join(__dirname, '..', p);
       const s = fs.statSync(full);
       const img = await Jimp.read(full);
-      console.log(`${p} -> size=${s.size} bytes, ${img.bitmap.width}x${img.bitmap.height}`);
+      console.log(`${p} -> size=${s.size} bytes, ${img.width}x${img.height}`);
     } catch (e) {
       console.log(`${p} -> MISSING or ERROR: ${e.message}`);
     }

@@ -2,7 +2,7 @@
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
-const Jimp = require('jimp');
+const { Jimp } = require('jimp');
 
 async function downloadAndProcess(appId) {
   const candidates = [
@@ -31,14 +31,12 @@ async function downloadAndProcess(appId) {
   if (!buffer) throw new Error('No image found for appId ' + appId);
 
   const image = await Jimp.read(buffer);
-  // ensure RGBA
-  image.rgba(true);
-  const maxDim = Math.max(image.bitmap.width, image.bitmap.height);
-  const padded = new Jimp(maxDim, maxDim, 0x00000000); // transparent
-  const x = Math.floor((maxDim - image.bitmap.width) / 2);
-  const y = Math.floor((maxDim - image.bitmap.height) / 2);
-  padded.composite(image, x, y);
-  padded.resize(1024, 1024, Jimp.RESIZE_BICUBIC);
+  const maxDim = Math.max(image.width, image.height);
+  const padded = new Jimp({ width: maxDim, height: maxDim, color: 0x00000000 });
+  const x = Math.floor((maxDim - image.width) / 2);
+  const y = Math.floor((maxDim - image.height) / 2);
+  await padded.composite(image, x, y);
+  await padded.resize({ w: 1024, h: 1024 });
 
   const outDir = path.join(__dirname, '..', 'GFN_Discord_Rich_Presence', 'downloaded_capsules');
   fs.mkdirSync(outDir, { recursive: true });
