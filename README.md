@@ -8,7 +8,7 @@
 
 ## 🎮 About
 
-An unofficial Electron client for NVIDIA's GeForce NOW game streaming service, providing a native Linux desktop experience with enhanced features including **Discord Rich Presence integration** and **interactive settings interface**.
+An unofficial Electron client for NVIDIA's GeForce NOW game streaming service, providing a native Linux desktop experience with enhanced features including Discord Rich Presence integration and interactive settings interface.
 
 ### ✨ Key Features
 
@@ -40,17 +40,17 @@ npm start
 ### First Time Setup
 
 1. **Start the application**: `npm start`
-2. **Configure Discord Rich Presence**:
+2. **Configure Discord Rich Presence** (optional):
    - Look for the green "⚙️ Discord Settings" button in the top-right corner
    - Click it to open the settings modal
    - Follow the step-by-step instructions to get your Discord Client ID
    - Test the connection and save your settings
 
-## 🎯 Discord Rich Presence Setup
+## 🎯 Discord Rich Presence
 
 Discord Rich Presence integration with automatic game detection and Steam artwork support.
 
-> **📖 Complete Setup Guide**: See [scripts/README.md](scripts/README.md) for detailed Discord Rich Presence configuration, asset management, and troubleshooting.
+> **📖 Complete Discord Setup Guide**: See [scripts/README.md](scripts/README.md) for detailed Discord Rich Presence configuration, asset management, and troubleshooting.
 
 ## ⌨️ Keyboard Shortcuts
 
@@ -89,10 +89,6 @@ npm test           # Run tests
 npm run gen-changelog # Generate changelog
 ```
 
-### Discord Asset Tools
-
-> **📖 Asset Management**: See [scripts/README.md](scripts/README.md) for Discord asset download scripts and management tools.
-
 ### Testing
 
 ```bash
@@ -102,14 +98,6 @@ npm test
 # Run with coverage
 npx jest --coverage --runInBand
 ```
-
-## 🔧 Configuration
-
-> **📖 Configuration Guide**: See [scripts/README.md](scripts/README.md) for Discord settings configuration and hardware acceleration details.
-
-## 🐛 Troubleshooting
-
-> **📖 Troubleshooting Guide**: See [scripts/README.md](scripts/README.md) for comprehensive troubleshooting, common issues, and debug information.
 
 ## 📁 Project Structure
 
@@ -128,7 +116,7 @@ scripts/
 └── Poster game images/     # 240+ pre-made game assets
 ```
 
-### Scripts Documentation
+### Documentation
 
 - **[scripts/README.md](scripts/README.md)** - Complete Discord Rich Presence setup guide
 - **Asset Management** - How to download and upload game artwork

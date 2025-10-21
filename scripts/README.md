@@ -2,38 +2,59 @@
 
 <img width="279" height="119" alt="Screenshot from 2025-10-07 12-48-39" src="https://github.com/user-attachments/assets/4a427f51-c07c-4ea2-aa89-3c0a52780529" />
 <img width="279" height="119" alt="Screenshot from 2025-10-07 12-48-22" src="https://github.com/user-attachments/assets/32e11b33-3e52-4a5c-8c8f-ea5186c8c805" />
-<img width="279" height="119" alt="Screenshot from 2025-10-07 12-48-12" src="https://github.com/user-attachments/assets/e80a6b68-00e2-449c-8c0e-0f0318547bf5" />
+<img width="279" height="119" alt="Screenshot from 2025-10-07 12-48-12" src="https://github.com/user-attachments/assets/e80b68-00e2-449c-8c0e-0f0318547bf5" />
 
 This folder contains the Discord Rich Presence integration for GeForce NOW, providing automatic game detection and dynamic artwork display.
 
-## Features
+## 🎯 Features
 
-- **Automatic Game Detection**: Extracts game names from GeForce NOW page titles
-- **Steam Integration**: Automatically finds Steam App IDs for accurate game matching
-- **Dynamic Artwork**: Shows game-specific artwork in Discord when available
-- **Intelligent Caching**: Stores Steam ID mappings for faster subsequent launches
-- **Robust Fallback**: Uses NVIDIA icon when game artwork isn't available
-- **Debug Logging**: Comprehensive logging for development and troubleshooting
+- **Automatic Game Detection** - Extracts game names from GeForce NOW page titles
+- **Steam Integration** - Automatically finds Steam App IDs for accurate game matching
+- **Dynamic Artwork** - Shows game-specific artwork in Discord when available
+- **Intelligent Caching** - Stores Steam ID mappings for faster subsequent launches
+- **Robust Fallback** - Uses NVIDIA icon when game artwork isn't available
+- **Interactive Settings** - Built-in Discord Client ID configuration interface
+- **Debug Logging** - Comprehensive logging for development and troubleshooting
 
-## Files
+## 📁 Files
 
-- **`rpc.js`**: Main Discord RPC integration with Steam scraping
-- **`test-steam-scraper.js`**: Test script for validating Steam App ID detection
-- **`Poster game images/`**: Collection of 240+ game poster images for Discord assets
+- **`rpc.js`** - Main Discord RPC integration with Steam scraping
+- **`settings.js`** - Settings management and Discord detection
+- **`gfn-settings-injector.js`** - UI injection script for settings interface
+- **`test-steam-scraper.js`** - Test script for validating Steam App ID detection
+- **`download_poster.js`** - Download Steam game posters (512x512)
+- **`download_gfn_capsule.js`** - Download GFN capsules (1024x1024)
+- **`inspect_posters.js`** - Check downloaded image dimensions
+- **`Poster game images/`** - Collection of 240+ game poster images for Discord assets
 
-## Development Setup
+## 🚀 Quick Setup
 
-### Discord Application Configuration
+### Interactive Settings (Recommended)
+
+1. **Start the application**: `npm start`
+2. **Look for the green "⚙️ Discord Settings" button** in the top-right corner
+3. **Click the button** to open the interactive settings modal
+4. **Follow the step-by-step instructions** to get your Discord Client ID
+5. **Test the connection** and save your settings
+
+### Discord Application Setup
 
 1. **Create a Discord application** at [Discord Developer Portal](https://discord.com/developers/applications)
 2. **Go to your application's "General Information" page**
 3. **Copy the "Application ID"** (this is your client ID)
-4. **Use the Interactive Settings Interface** (Recommended):
-
+4. **Use the Interactive Settings Interface**:
    - Start the app: `npm start`
    - Click the green "⚙️ Discord Settings" button in the top-right corner
    - Paste your Client ID in the settings modal
    - Test the connection and save
+
+## 🔧 Configuration Methods
+
+### Interactive Settings (Primary Method)
+
+The app provides a built-in settings interface accessible via the green "⚙️ Discord Settings" button in the top-right corner of the GeForce NOW interface.
+
+**Settings are automatically saved to**: `~/.config/gfn-electron-settings.json`
 
 ### Alternative Configuration Methods
 
@@ -42,10 +63,6 @@ This folder contains the Discord Rich Presence integration for GeForce NOW, prov
 ```bash
 DISCORD_CLIENT_ID=1234567890123456789 npm start
 ```
-
-#### Settings File (Automatic)
-
-The app automatically creates `~/.config/gfn-electron-settings.json` when you use the interactive settings interface.
 
 #### Legacy Local Config (Development)
 
@@ -71,7 +88,9 @@ module.exports = {
 3. Local config file (`scripts/local-config.js`)
 4. Fallback placeholder (`YOUR_CLIENT_ID_HERE`)
 
-### Discord Asset Setup
+## 🎨 Discord Asset Management
+
+### Uploading Game Artwork
 
 To display game artwork in Discord Rich Presence:
 
@@ -93,7 +112,23 @@ node scripts/inspect_posters.js
 
 4. **Use Pre-made Assets**: Check `Poster game images/` folder for 240+ ready-to-use game posters!
 
-### Game Cache
+### Asset Download Scripts
+
+```bash
+# Download game posters (512x512)
+node scripts/download_poster.js [SteamAppID]
+
+# Download GFN capsules (1024x1024 with transparency)
+node scripts/download_gfn_capsule.js [SteamAppID]
+
+# Inspect downloaded images
+node scripts/inspect_posters.js
+
+# Test Steam App ID detection
+node scripts/test-steam-scraper.js "Game Name"
+```
+
+## 🎮 Game Cache
 
 The system automatically caches Steam App ID mappings for performance:
 
@@ -119,7 +154,7 @@ cat ~/.config/"GeForce NOW"/game_cache.json
 }
 ```
 
-## Usage Options
+## 🛠️ Usage Options
 
 ### Basic Usage (Interactive Settings - Recommended)
 
@@ -181,8 +216,7 @@ DISABLE_RPC=true npm start
 ```
 
 - Persistent (local configuration — not committed):
-
-Create `scripts/local-config.js` (it is gitignored) and add:
+  Create `scripts/local-config.js` (it is gitignored) and add:
 
 ```javascript
 module.exports = {
@@ -192,7 +226,7 @@ module.exports = {
 
 The application will honor either method and skip initializing Discord RPC when set.
 
-## Testing
+## 🧪 Testing
 
 ### Steam Scraper Test
 
@@ -229,7 +263,7 @@ npm start
 # Click it to test the Discord Client ID configuration
 ```
 
-## How It Works
+## 🔍 How It Works
 
 ### Game Detection Process
 
@@ -262,13 +296,15 @@ The system uses **Cheerio** for robust HTML parsing instead of fragile regex pat
 - **State Message**: "Not affiliated with NVIDIA" disclaimer
 - **Timestamp**: Shows session start time
 
-## Dependencies
+## 📦 Dependencies
 
 - **`axios`**: HTTP client for Steam Store requests
 - **`cheerio`**: Server-side jQuery for HTML parsing
 - **`discord-rich-presence`**: Discord RPC client library
+- **`find-process`**: Process detection for Discord status
+- **`jimp`**: Image processing for asset management
 
-## Configuration Options
+## ⚙️ Configuration Options
 
 ### Environment Variables
 
@@ -276,6 +312,7 @@ The system uses **Cheerio** for robust HTML parsing instead of fragile regex pat
 | ------------------- | ----------------------------- | --------------------- |
 | `DISCORD_CLIENT_ID` | Discord application client ID | `YOUR_CLIENT_ID_HERE` |
 | `DEBUG`             | Enable verbose logging        | `false`               |
+| `DISABLE_RPC`       | Disable Discord Rich Presence | `false`               |
 
 ### Command Line Arguments
 
@@ -283,7 +320,7 @@ The system uses **Cheerio** for robust HTML parsing instead of fragile regex pat
 | --------------- | ----------------------------- |
 | `--disable-rpc` | Disable Discord Rich Presence |
 
-## Troubleshooting
+## 🐛 Troubleshooting
 
 ### Common Issues
 
@@ -292,6 +329,7 @@ The system uses **Cheerio** for robust HTML parsing instead of fragile regex pat
 - Ensure Discord is running
 - Verify client ID is correct
 - Check Discord Developer Portal application status
+- Use the interactive settings to test the connection
 
 **Games not detected:**
 
@@ -299,6 +337,13 @@ The system uses **Cheerio** for robust HTML parsing instead of fragile regex pat
 - Check game name extraction in logs
 - Verify Steam Store accessibility
 - Review matching scores in debug output
+
+**Settings button not visible:**
+
+- Wait 2-3 seconds after the page loads
+- Check browser console for errors (F12)
+- Ensure you're on the GeForce NOW interface
+- Try refreshing the page
 
 **Cache issues:**
 
@@ -323,15 +368,17 @@ Game name normalization process
 Matching scores for each candidate
 Discord RPC client status
 Rich Presence update results
+Settings interface injection
+Discord process detection
 ```
 
-## Performance Notes
+## 📊 Performance Notes
 
 - **Caching**: First lookup per game may take 2-5 seconds; subsequent launches are instant
 - **Rate Limiting**: No explicit rate limiting on Steam requests (use responsibly)
 - **Memory Usage**: Minimal; cache file typically <1KB for 50+ games
 - **Network**: Only makes requests for uncached games
 
-## Credits
+## 🏆 Credits
 
 This implementation is based on the original Windows app: [GeForce-NOW-Rich-Presence](https://github.com/luisbrn/GeForce-NOW-Rich-Presence)
