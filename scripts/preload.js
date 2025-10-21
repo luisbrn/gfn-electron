@@ -2,6 +2,13 @@
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
 
+const { ipcRenderer } = require('electron');
+
+// Expose ipcRenderer to the renderer process
+window.electronIPC = {
+  invoke: (channel, ...args) => ipcRenderer.invoke(channel, ...args),
+};
+
 window.addEventListener('DOMContentLoaded', () => {
   const replaceText = (selector, text) => {
     const element = document.getElementById(selector);
@@ -13,10 +20,14 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   // Inject Discord settings into GeForce NOW interface
+  console.log('Preload.js: Current hostname:', window.location.hostname);
+  console.log('Preload.js: Current URL:', window.location.href);
+
   if (
     window.location.hostname.includes('geforcenow.com') ||
     window.location.hostname.includes('play.geforcenow.com')
   ) {
+    console.log('Preload.js: Detected GeForce NOW page, injecting settings...');
     // Load the settings injector script
     const fs = require('fs');
     const path = require('path');
@@ -27,13 +38,18 @@ window.addEventListener('DOMContentLoaded', () => {
         'utf8',
       );
 
+      console.log('Preload.js: Settings script loaded, length:', settingsScript.length);
+
       // Create and inject the script
       const script = document.createElement('script');
       script.textContent = settingsScript;
-      document.head.appendChild(script);
+      (document.head || document.documentElement).appendChild(script);
+      console.log('Preload.js: Settings script injected successfully');
     } catch (error) {
-      console.error('Failed to inject settings script:', error);
+      console.error('Preload.js: Failed to inject settings script:', error);
     }
+  } else {
+    console.log('Preload.js: Not a GeForce NOW page, skipping injection');
   }
 });
 

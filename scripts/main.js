@@ -90,6 +90,7 @@ async function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: false,
+      nodeIntegration: false,
       userAgent: userAgent,
     },
   });
@@ -106,6 +107,23 @@ async function createWindow() {
   // Ensure GUI is at 100% zoom (normal size)
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.webContents.setZoomFactor(1.0);
+
+    // Inject Discord settings button into GeForce NOW interface
+    const settingsInjectorPath = path.join(__dirname, 'gfn-settings-injector.js');
+    if (fs.existsSync(settingsInjectorPath)) {
+      const injectorScript = fs.readFileSync(settingsInjectorPath, 'utf8');
+      // Wrap in try-catch to handle any injection errors
+      const wrappedScript = `
+        try {
+          ${injectorScript}
+        } catch (error) {
+          console.error('Settings injection error:', error);
+        }
+      `;
+      mainWindow.webContents.executeJavaScript(wrappedScript).catch(error => {
+        console.error('Failed to inject settings:', error);
+      });
+    }
   });
 
   /*

@@ -1,8 +1,14 @@
 /* eslint-env browser */
 // GFN Settings Injector - Adds settings button to GeForce NOW interface
-const { ipcRenderer } = require('electron');
 
 // Settings functionality for GeForce NOW interface
+// Use the electron IPC that was exposed by preload
+const ipcRenderer = window.electronIPC || {
+  invoke: async () => {
+    console.error('electronIPC not available');
+    return null;
+  },
+};
 
 // Create the settings button
 function createSettingsButton() {
@@ -233,27 +239,39 @@ function showStatus(message, type) {
 
 // Initialize when page loads
 function initializeSettings() {
+  console.log('GFN Settings Injector: Initializing...');
+  console.log('GFN Settings Injector: document.readyState:', document.readyState);
+
   // Wait for the page to be ready
   if (document.readyState === 'loading') {
+    console.log('GFN Settings Injector: Document still loading, waiting for DOMContentLoaded');
     document.addEventListener('DOMContentLoaded', () => {
+      console.log('GFN Settings Injector: DOMContentLoaded fired, will add button in 2 seconds');
       setTimeout(addSettingsButton, 2000);
     });
   } else {
+    console.log('GFN Settings Injector: Document already loaded, will add button in 2 seconds');
     setTimeout(addSettingsButton, 2000);
   }
 }
 
 // Add settings button to the page
 function addSettingsButton() {
+  console.log('GFN Settings Injector: Attempting to add settings button...');
+
   // Check if button already exists
   if (document.getElementById('gfn-settings-button')) {
+    console.log('GFN Settings Injector: Button already exists, skipping');
     return;
   }
 
+  console.log('GFN Settings Injector: Creating settings button...');
   const settingsButton = createSettingsButton();
   settingsButton.id = 'gfn-settings-button';
   document.body.appendChild(settingsButton);
+  console.log('GFN Settings Injector: Settings button added successfully!');
 }
 
 // Start the initialization
+console.log('GFN Settings Injector: Script loaded, starting initialization...');
 initializeSettings();
