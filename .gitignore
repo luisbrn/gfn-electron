@@ -13,3 +13,8 @@ CONTRIBUTING.md
 # Runtime artifacts
 game_cache.json
 .changes/
+# Profiler logs
+isolate-*-v8.log
+poster-images.tar.gz
+# Temporary profiler artifacts
+*.log
