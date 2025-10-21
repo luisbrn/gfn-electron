@@ -35,6 +35,11 @@ function getCacheFilePath() {
 
 const CACHE_FILE = getCacheFilePath();
 
+// Manual override map for known game title -> Steam appId
+const MANUAL_OVERRIDES = {
+  'ARC Raiders Playtest': '2427520',
+};
+
 function initializeRPC() {
   if (isInitialized) return;
   // Honor environment variable to disable RPC entirely
@@ -160,10 +165,22 @@ function initializeRPC() {
   isInitialized = true;
 }
 
+// Lazy require of GFN capsule downloader (optional)
+let downloadGfnCapsule = null;
+try {
+  downloadGfnCapsule = require('./download_gfn_capsule').downloadAndProcess;
+} catch (e) {
+  // downloader not available, that's fine
+}
+
 function saveGameCache() {
   try {
+    // Write to Electron userData cache
     fs.writeFileSync(CACHE_FILE, JSON.stringify(gameCache, null, 2));
-    log('debug', 'Game cache saved successfully');
+    // Also write to repo-level cache for developer visibility
+    const repoCachePath = path.join(__dirname, '..', 'game_cache.json');
+    fs.writeFileSync(repoCachePath, JSON.stringify(gameCache, null, 2));
+    log('debug', 'Game cache saved successfully to both locations');
   } catch (e) {
     log('error', 'Error saving cache:', e.message);
   }
@@ -218,6 +235,13 @@ function _setInitialized(v) {
 
 async function getSteamAppId(gameName) {
   try {
+    // Check manual overrides first
+    if (MANUAL_OVERRIDES[gameName]) {
+      log('debug', `Manual override found for "${gameName}": ${MANUAL_OVERRIDES[gameName]}`);
+      gameCache[gameName] = { id: MANUAL_OVERRIDES[gameName], ts: Date.now() };
+      saveGameCache();
+      return MANUAL_OVERRIDES[gameName];
+    }
     // Use cache if present and valid
     const cached = gameCache[gameName];
     if (cached && typeof cached === 'object') {
@@ -231,27 +255,50 @@ async function getSteamAppId(gameName) {
       return cached;
     }
 
-    const url = `https://store.steampowered.com/search/?term=${encodeURIComponent(
-      gameName,
-    )}&category1=998`;
-    log('debug', `Searching Steam for: "${gameName}"`);
+    // Try several progressively simpler queries if Steam returns no results.
+    const tried = new Set();
+    const queriesToTry = [];
+    // Primary: full game name
+    queriesToTry.push(gameName);
+    // Secondary: strip common qualifiers like playtest/demo/alpha/beta/test
+    const stripped = gameName
+      .replace(/\b(playtest|play test|demo|alpha|beta|test|internal)\b/gi, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (stripped && stripped !== gameName) queriesToTry.push(stripped);
+    // Tertiary: progressively shorter prefixes (drop trailing words)
+    const parts = gameName.split(/\s+/).filter(Boolean);
+    for (let n = parts.length - 1; n >= 1; n--) {
+      const prefix = parts.slice(0, n).join(' ');
+      if (prefix && !queriesToTry.includes(prefix)) queriesToTry.push(prefix);
+    }
 
-    const resp = await requestWithBackoff(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; GFN-Electron)' },
-      timeout: 15000,
-    });
+    let results = [];
+    for (const q of queriesToTry) {
+      if (tried.has(q)) continue;
+      tried.add(q);
+      const url = `https://store.steampowered.com/search/?term=${encodeURIComponent(
+        q,
+      )}&category1=998`;
+      log('debug', `Searching Steam for: "${q}"`);
+      const resp = await requestWithBackoff(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; GFN-Electron)' },
+        timeout: 15000,
+      });
 
-    const $ = cheerio.load(resp.data);
-    const results = [];
+      const $ = cheerio.load(resp.data);
+      results = [];
+      $('a[data-ds-appid]').each((i, element) => {
+        const appId = $(element).attr('data-ds-appid');
+        const titleElement = $(element).find('.title');
+        const title = titleElement.text().trim();
+        if (appId && title) results.push({ appId, title });
+      });
 
-    $('a[data-ds-appid]').each((i, element) => {
-      const appId = $(element).attr('data-ds-appid');
-      const titleElement = $(element).find('.title');
-      const title = titleElement.text().trim();
-      if (appId && title) results.push({ appId, title });
-    });
+      log('debug', `Found ${results.length} Steam results for query: "${q}"`);
+      if (results.length > 0) break;
+    }
 
-    log('debug', `Found ${results.length} Steam results`);
     if (results.length === 0) return null;
 
     let best = null;
@@ -286,6 +333,26 @@ async function getSteamAppId(gameName) {
       );
       gameCache[gameName] = { id: best.appId, ts: Date.now() };
       saveGameCache();
+      // Attempt to download and process GFN capsule image (non-blocking)
+      try {
+        if (downloadGfnCapsule) {
+          const gfnOut = path.join(
+            __dirname,
+            '..',
+            'GFN_Discord_Rich_Presence',
+            'downloaded_capsules',
+            `${best.appId}.png`,
+          );
+          if (!fs.existsSync(gfnOut)) {
+            // fire-and-forget
+            downloadGfnCapsule(best.appId).catch(err =>
+              log('warn', 'GFN capsule download failed:', err && err.message ? err.message : err),
+            );
+          }
+        }
+      } catch (e) {
+        log('debug', 'GFN capsule download skipped or failed:', e && e.message ? e.message : e);
+      }
       return best.appId;
     }
 
@@ -324,8 +391,18 @@ async function DiscordRPC(title) {
 
   if (gameName) {
     if (gameCache[gameName]) {
-      steamId = gameCache[gameName];
+      // gameCache may store either a legacy string or an object {id, ts}
+      const entry = gameCache[gameName];
+      if (typeof entry === 'string') {
+        steamId = entry;
+      } else if (entry && typeof entry === 'object') {
+        steamId = entry.id;
+      }
       log('debug', `Using cached Steam ID: ${steamId}`);
+      // If steamId is not found on the cached object, fallback to lookup
+      if (!steamId) {
+        steamId = await getSteamAppId(gameName);
+      }
     } else {
       steamId = await getSteamAppId(gameName);
     }
@@ -345,7 +422,7 @@ async function DiscordRPC(title) {
       instance: true,
     };
 
-    if (steamId && /^\d{6,7}$/.test(steamId)) {
+    if (steamId && /^\d{1,7}$/.test(steamId)) {
       presenceData.largeImageKey = steamId;
       client.updatePresence(presenceData);
       log('info', `Discord RPC: Successfully using Steam ID ${steamId} for artwork`);
