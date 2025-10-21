@@ -73,10 +73,23 @@ This approach is the most convenient for development and keeps your client ID ou
 
 To display game artwork in Discord Rich Presence:
 
-1. Go to your Discord application in the Developer Portal
-2. Navigate to "Rich Presence" → "Art Assets"
-3. Upload game images using Steam App IDs as asset names (e.g., `1240440` for Halo Infinite)
-4. Use the provided poster images in `Poster game images/` folder to quickly bootstrap common games
+1. **Go to Discord Developer Portal** → Your Application → "Rich Presence" → "Art Assets"
+2. **Upload Game Images** using Steam App IDs as asset names (e.g., `1240440` for Halo Infinite)
+3. **Use Provided Scripts** to download and process game artwork:
+
+```bash
+# Download poster images for specific games
+node scripts/download_poster.js 1240440  # Halo Infinite
+node scripts/download_poster.js 1938090 # Call of Duty
+
+# Download GFN capsule images (1024x1024 with transparency)
+node scripts/download_gfn_capsule.js 1240440
+
+# Inspect downloaded images
+node scripts/inspect_posters.js
+```
+
+4. **Use Pre-made Assets**: Check `Poster game images/` folder for 240+ ready-to-use game posters!
 
 ### Game Cache
 
