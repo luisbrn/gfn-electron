@@ -97,6 +97,11 @@ async function createWindow() {
     mainWindow.loadURL(homePage);
   }
 
+  // Ensure GUI is at 100% zoom (normal size)
+  mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow.webContents.setZoomFactor(1.0);
+  });
+
   /*
   uncomment this to debug any errors with loading GFN landing page
 
