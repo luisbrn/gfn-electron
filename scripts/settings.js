@@ -40,22 +40,6 @@ function getDiscordClientId() {
 function checkDiscordRunning() {
   return new Promise(resolve => {
     const findProcess = require('find-process');
-    const namesToCheck = [
-      'discord',
-      'Discord',
-      'Discord.exe',
-      'discord-canary',
-      'DiscordCanary',
-      'DiscordCanary.exe',
-      'DiscordPTB',
-      'DiscordPTB.exe',
-      'discord-ptb',
-      'discord-canary',
-      '/opt/discord/Discord',
-      '/usr/bin/discord',
-      'discord-desktop',
-      'DiscordDesktop',
-    ];
 
     // Try multiple detection methods
     Promise.all([
