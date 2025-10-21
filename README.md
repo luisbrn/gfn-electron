@@ -48,43 +48,9 @@ npm start
 
 ## 🎯 Discord Rich Presence Setup
 
-### Quick Setup
+Discord Rich Presence integration with automatic game detection and Steam artwork support.
 
-1. **Start the app** and look for the green "⚙️ Discord Settings" button in the top-right corner
-2. **Click the button** to open the interactive settings modal
-3. **Follow the step-by-step instructions** to get your Discord Client ID
-4. **Test the connection** and save your settings
-
-### Features
-
-- **Automatic Game Detection** - Detects what game you're playing
-- **Steam Integration** - Looks up Steam artwork for games
-- **Interactive Settings** - Built-in Discord Client ID configuration
-- **Status Updates** - Shows "Playing [Game Name] on GeForce NOW"
-
-### Discord Asset Management
-
-To display game artwork in Discord, you need to upload images to your Discord application:
-
-1. **Go to Discord Developer Portal** → Your Application → "Rich Presence" → "Art Assets"
-2. **Upload Game Images** using Steam App IDs as asset names (e.g., `1240440` for Halo Infinite)
-3. **Use Provided Scripts** to download and process game artwork:
-
-```bash
-# Download poster images for specific games
-node scripts/download_poster.js 1240440  # Halo Infinite
-node scripts/download_poster.js 1938090 # Call of Duty
-
-# Download GFN capsule images (1024x1024 with transparency)
-node scripts/download_gfn_capsule.js 1240440
-
-# Inspect downloaded images
-node scripts/inspect_posters.js
-```
-
-**📁 Pre-made Assets**: Check `scripts/Poster game images/` for 240+ ready-to-use game posters!
-
-> **📖 Detailed Setup**: See [scripts/README.md](scripts/README.md) for complete Discord Rich Presence configuration, asset management, and troubleshooting.
+> **📖 Complete Setup Guide**: See [scripts/README.md](scripts/README.md) for detailed Discord Rich Presence configuration, asset management, and troubleshooting.
 
 ## ⌨️ Keyboard Shortcuts
 
@@ -125,19 +91,7 @@ npm run gen-changelog # Generate changelog
 
 ### Discord Asset Tools
 
-```bash
-# Download game posters (512x512)
-node scripts/download_poster.js [SteamAppID]
-
-# Download GFN capsules (1024x1024 with transparency)
-node scripts/download_gfn_capsule.js [SteamAppID]
-
-# Inspect downloaded images
-node scripts/inspect_posters.js
-
-# Test Steam App ID detection
-node scripts/test-steam-scraper.js "Game Name"
-```
+> **📖 Asset Management**: See [scripts/README.md](scripts/README.md) for Discord asset download scripts and management tools.
 
 ### Testing
 
