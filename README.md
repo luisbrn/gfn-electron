@@ -105,52 +105,11 @@ npx jest --coverage --runInBand
 
 ## 🔧 Configuration
 
-### Discord Settings
-
-- **Settings File**: `~/.config/gfn-electron-settings.json`
-- **Environment Variable**: `DISCORD_CLIENT_ID`
-- **Interactive Setup**: Use the built-in settings interface
-
-### Hardware Acceleration
-
-The app automatically configures:
-
-- VAAPI video decoding
-- GPU rasterization
-- Zero-copy rendering
-- Wayland support
+> **📖 Configuration Guide**: See [scripts/README.md](scripts/README.md) for Discord settings configuration and hardware acceleration details.
 
 ## 🐛 Troubleshooting
 
-### Common Issues
-
-#### Discord Not Detected
-
-- Ensure Discord is running
-- Check that the Discord process is visible in system monitor
-- Try restarting the application
-
-#### Settings Button Not Visible
-
-- Wait 2-3 seconds after the page loads
-- Check browser console for errors (F12)
-- Ensure you're on the GeForce NOW interface
-
-#### Performance Issues
-
-- Enable hardware acceleration in your system
-- Check GPU drivers are up to date
-- Try different `--use-gl` implementations
-
-### Debug Mode
-
-```bash
-# Enable debug logging
-DEBUG=* npm start
-
-# Check Discord detection
-npm test
-```
+> **📖 Troubleshooting Guide**: See [scripts/README.md](scripts/README.md) for comprehensive troubleshooting, common issues, and debug information.
 
 ## 📁 Project Structure
 
