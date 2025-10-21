@@ -48,19 +48,18 @@ npm start
 
 ## 🎯 Discord Rich Presence Setup
 
-### Getting Your Discord Client ID
+### Quick Setup
 
-1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
-2. Click "New Application" and give it a name (e.g., "GeForce NOW")
-3. Go to the "General Information" tab
-4. Copy the "Application ID" (17-19 digits)
-5. Paste it in the Discord Settings modal in the app
+1. **Start the app** and look for the green "⚙️ Discord Settings" button in the top-right corner
+2. **Click the button** to open the interactive settings modal
+3. **Follow the step-by-step instructions** to get your Discord Client ID
+4. **Test the connection** and save your settings
 
 ### Features
 
 - **Automatic Game Detection** - Detects what game you're playing
 - **Steam Integration** - Looks up Steam artwork for games
-- **Custom Artwork** - Downloads and caches game images
+- **Interactive Settings** - Built-in Discord Client ID configuration
 - **Status Updates** - Shows "Playing [Game Name] on GeForce NOW"
 
 ### Discord Asset Management

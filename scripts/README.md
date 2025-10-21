@@ -25,49 +25,51 @@ This folder contains the Discord Rich Presence integration for GeForce NOW, prov
 
 ### Discord Application Configuration
 
-1. Create a Discord application at [Discord Developer Portal](https://discord.com/developers/applications)
-2. Go to your application's "General Information" page
-3. Copy the "Application ID" (this is your client ID)
-4. Set the client ID as an environment variable:
+1. **Create a Discord application** at [Discord Developer Portal](https://discord.com/developers/applications)
+2. **Go to your application's "General Information" page**
+3. **Copy the "Application ID"** (this is your client ID)
+4. **Use the Interactive Settings Interface** (Recommended):
+
+   - Start the app: `npm start`
+   - Click the green "⚙️ Discord Settings" button in the top-right corner
+   - Paste your Client ID in the settings modal
+   - Test the connection and save
+
+### Alternative Configuration Methods
+
+#### Environment Variable
 
 ```bash
 DISCORD_CLIENT_ID=1234567890123456789 npm start
 ```
 
-**Important**: Never commit your real client ID to the repository. The code uses `YOUR_CLIENT_ID_HERE` as a placeholder.
+#### Settings File (Automatic)
 
-### Persistent Client ID Setup (Recommended)
+The app automatically creates `~/.config/gfn-electron-settings.json` when you use the interactive settings interface.
 
-Instead of setting the environment variable each time, you can store your Discord client ID in a local, gitignored file:
+#### Legacy Local Config (Development)
 
-1. Create a copy of the example config file:
+For development purposes, you can still use the local config file:
 
 ```bash
+# Create local config (gitignored)
 cp scripts/local-config.js.example scripts/local-config.js
 ```
 
-2. Edit the `scripts/local-config.js` file (this file is in .gitignore):
+Edit `scripts/local-config.js`:
 
 ```javascript
-// scripts/local-config.js - this file is gitignored and won't be committed
 module.exports = {
-  DISCORD_CLIENT_ID: '1234567890123456789', // Replace with your actual Discord client ID
+  DISCORD_CLIENT_ID: '1234567890123456789', // Your Discord client ID
 };
 ```
 
-3. Run the app normally:
+**Priority Order:**
 
-```bash
-npm start
-```
-
-The app will automatically:
-
-- Look for environment variable `DISCORD_CLIENT_ID`
-- If not found, try to load from `scripts/local-config.js`
-- If neither is available, fall back to the placeholder (`YOUR_CLIENT_ID_HERE`)
-
-This approach is the most convenient for development and keeps your client ID out of the repository.
+1. Interactive settings file (`~/.config/gfn-electron-settings.json`)
+2. Environment variable (`DISCORD_CLIENT_ID`)
+3. Local config file (`scripts/local-config.js`)
+4. Fallback placeholder (`YOUR_CLIENT_ID_HERE`)
 
 ### Discord Asset Setup
 
@@ -119,18 +121,36 @@ cat ~/.config/"GeForce NOW"/game_cache.json
 
 ## Usage Options
 
-### Basic Usage
+### Basic Usage (Interactive Settings - Recommended)
+
+```bash
+npm start
+```
+
+Then use the interactive settings interface:
+
+1. Click the green "⚙️ Discord Settings" button
+2. Enter your Discord Client ID
+3. Test the connection and save
+
+### Alternative Usage Methods
+
+#### Environment Variable
 
 ```bash
 DISCORD_CLIENT_ID=your_client_id npm start
 ```
+
+#### Settings File
+
+The app automatically uses `~/.config/gfn-electron-settings.json` when configured through the interactive interface.
 
 ### Debug Mode
 
 Enable verbose logging to see detailed information about game detection, Steam searches, and RPC updates:
 
 ```bash
-DEBUG=true DISCORD_CLIENT_ID=your_client_id npm start
+DEBUG=true npm start
 ```
 
 **Debug Output Includes:**
@@ -155,7 +175,7 @@ You can disable Discord Rich Presence if you don't want the app to attempt to co
 
 - Environment variable (temporary):
 
-```fish
+```bash
 # Disable for this run
 DISABLE_RPC=true npm start
 ```
@@ -195,6 +215,18 @@ DEBUG=true node -e "
 const { DiscordRPC } = require('./scripts/rpc.js');
 DiscordRPC('Halo Infinite on GeForce NOW').then(() => console.log('Done'));
 "
+```
+
+### Interactive Settings Testing
+
+Test the settings interface:
+
+```bash
+# Start the app and test the settings button
+npm start
+
+# The settings button should appear in the top-right corner
+# Click it to test the Discord Client ID configuration
 ```
 
 ## How It Works
