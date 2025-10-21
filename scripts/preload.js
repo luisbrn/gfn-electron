@@ -11,6 +11,30 @@ window.addEventListener('DOMContentLoaded', () => {
   for (const type of ['chrome', 'node', 'electron']) {
     replaceText(`${type}-version`, process.versions[type]);
   }
+
+  // Inject Discord settings into GeForce NOW interface
+  if (
+    window.location.hostname.includes('geforcenow.com') ||
+    window.location.hostname.includes('play.geforcenow.com')
+  ) {
+    // Load the settings injector script
+    const fs = require('fs');
+    const path = require('path');
+
+    try {
+      const settingsScript = fs.readFileSync(
+        path.join(__dirname, 'gfn-settings-injector.js'),
+        'utf8',
+      );
+
+      // Create and inject the script
+      const script = document.createElement('script');
+      script.textContent = settingsScript;
+      document.head.appendChild(script);
+    } catch (error) {
+      console.error('Failed to inject settings script:', error);
+    }
+  }
 });
 
 (function mockChromeUserAgent() {
