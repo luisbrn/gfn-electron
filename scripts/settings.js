@@ -41,35 +41,23 @@ function checkDiscordRunning() {
   return new Promise(resolve => {
     const findProcess = require('find-process');
 
-    // Try multiple detection methods
-    Promise.all([
-      // Method 1: Search by process name
-      findProcess('name', [
-        'discord',
-        'Discord',
-        'Discord.exe',
-        'discord-canary',
-        'DiscordCanary',
-        'DiscordPTB',
-      ]),
-      // Method 2: Search by command line containing discord
-      findProcess('cmd', ['discord', 'Discord']),
-      // Method 3: Search by binary path
-      findProcess('bin', ['/opt/discord/Discord', '/usr/bin/discord']),
+    // Search for Discord processes by name
+    findProcess('name', [
+      'discord',
+      'Discord',
+      'Discord.exe',
+      'discord-canary',
+      'DiscordCanary',
+      'DiscordPTB',
     ])
-      .then(results => {
-        const allProcesses = results.flat();
-        const uniqueProcesses = allProcesses.filter(
-          (process, index, self) => index === self.findIndex(p => p.pid === process.pid),
-        );
-
-        console.log('Discord detection: Found processes:', uniqueProcesses);
+      .then(processes => {
+        console.log('Discord detection: Found processes:', processes);
         resolve({
-          isRunning: uniqueProcesses.length > 0,
+          isRunning: processes.length > 0,
           message:
-            uniqueProcesses.length > 0
-              ? `Discord is running (${uniqueProcesses.length} process${
-                  uniqueProcesses.length > 1 ? 'es' : ''
+            processes.length > 0
+              ? `Discord is running (${processes.length} process${
+                  processes.length > 1 ? 'es' : ''
                 } found)`
               : 'Discord is not running',
         });
