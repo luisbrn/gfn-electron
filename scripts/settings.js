@@ -57,15 +57,35 @@ function checkDiscordRunning() {
       'DiscordDesktop',
     ];
 
-    findProcess('name', namesToCheck)
-      .then(processes => {
-        console.log('Discord detection: Found processes:', processes);
+    // Try multiple detection methods
+    Promise.all([
+      // Method 1: Search by process name
+      findProcess('name', [
+        'discord',
+        'Discord',
+        'Discord.exe',
+        'discord-canary',
+        'DiscordCanary',
+        'DiscordPTB',
+      ]),
+      // Method 2: Search by command line containing discord
+      findProcess('cmd', ['discord', 'Discord']),
+      // Method 3: Search by binary path
+      findProcess('bin', ['/opt/discord/Discord', '/usr/bin/discord']),
+    ])
+      .then(results => {
+        const allProcesses = results.flat();
+        const uniqueProcesses = allProcesses.filter(
+          (process, index, self) => index === self.findIndex(p => p.pid === process.pid),
+        );
+
+        console.log('Discord detection: Found processes:', uniqueProcesses);
         resolve({
-          isRunning: processes.length > 0,
+          isRunning: uniqueProcesses.length > 0,
           message:
-            processes.length > 0
-              ? `Discord is running (${processes.length} process${
-                  processes.length > 1 ? 'es' : ''
+            uniqueProcesses.length > 0
+              ? `Discord is running (${uniqueProcesses.length} process${
+                  uniqueProcesses.length > 1 ? 'es' : ''
                 } found)`
               : 'Discord is not running',
         });
