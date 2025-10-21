@@ -1,10 +1,16 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const electronLocalshortcut = require('electron-localshortcut');
 const findProcess = require('find-process');
 const fs = require('fs');
 const path = require('path');
 const { DiscordRPC } = require('./rpc.js');
 const { switchFullscreenState } = require('./windowManager.js');
+const {
+  loadSettings,
+  saveSettings,
+  checkDiscordRunning,
+  testDiscordConnection,
+} = require('./settings.js');
 
 var homePage = 'https://play.geforcenow.com';
 var userAgent =
@@ -149,6 +155,10 @@ app.whenReady().then(async () => {
   electronLocalshortcut.register('Control+Shift+I', () => {
     BrowserWindow.getAllWindows()[0].webContents.toggleDevTools();
   });
+
+  electronLocalshortcut.register('CmdOrCtrl+,', () => {
+    openSettingsWindow();
+  });
 });
 
 app.on('browser-window-created', async function (e, window) {
@@ -160,6 +170,35 @@ app.on('browser-window-created', async function (e, window) {
   window.webContents.on('new-window', (event, url) => {
     event.preventDefault();
     BrowserWindow.getAllWindows()[0].loadURL(url);
+  });
+
+  // Add context menu for settings access
+  window.webContents.on('context-menu', () => {
+    const { Menu, MenuItem } = require('electron');
+    const menu = new Menu();
+
+    menu.append(
+      new MenuItem({
+        label: 'Settings',
+        click: () => openSettingsWindow(),
+      }),
+    );
+
+    menu.append(
+      new MenuItem({
+        label: 'Reload',
+        click: () => window.reload(),
+      }),
+    );
+
+    menu.append(
+      new MenuItem({
+        label: 'Developer Tools',
+        click: () => window.webContents.toggleDevTools(),
+      }),
+    );
+
+    menu.popup();
   });
 
   if (discordIsRunning) {
@@ -205,6 +244,63 @@ app.on('window-all-closed', async function () {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+// Settings window
+let settingsWindow = null;
+
+function openSettingsWindow() {
+  if (settingsWindow && !settingsWindow.isDestroyed()) {
+    settingsWindow.focus();
+    return;
+  }
+
+  settingsWindow = new BrowserWindow({
+    width: 900,
+    height: 700,
+    resizable: true,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
+    title: 'GeForce NOW Settings',
+    icon: path.join(__dirname, '..', 'icon.png'),
+    show: false,
+  });
+
+  settingsWindow.loadFile(path.join(__dirname, 'settings.html'));
+
+  settingsWindow.once('ready-to-show', () => {
+    settingsWindow.show();
+  });
+
+  settingsWindow.on('closed', () => {
+    settingsWindow = null;
+  });
+}
+
+// IPC handlers for settings
+ipcMain.handle('get-settings', async () => {
+  return loadSettings();
+});
+
+ipcMain.handle('save-settings', async (event, settings) => {
+  const success = saveSettings(settings);
+  if (success) {
+    // Update environment variable for current session
+    if (settings.discordClientId) {
+      process.env.DISCORD_CLIENT_ID = settings.discordClientId;
+    }
+  }
+  return success;
+});
+
+ipcMain.handle('check-discord-status', async () => {
+  return await checkDiscordRunning();
+});
+
+ipcMain.handle('test-discord-connection', async (event, clientId) => {
+  return await testDiscordConnection(clientId);
 });
 
 function isDiscordRunning() {

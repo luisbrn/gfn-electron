@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeForce NOW Settings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1d1f;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2a2d2f;
+        }
+
+        .header h1 {
+            color: #00d4aa;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #888;
+            font-size: 1.1em;
+        }
+
+        .section {
+            background: #2a2d2f;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid #3a3d3f;
+        }
+
+        .section h2 {
+            color: #00d4aa;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h2::before {
+            content: "⚙️";
+            margin-right: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #1a1d1f;
+            border: 2px solid #3a3d3f;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #00d4aa;
+        }
+
+        .form-group input::placeholder {
+            color: #666;
+        }
+
+        .help-text {
+            background: #1a1d1f;
+            border: 1px solid #3a3d3f;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #ccc;
+        }
+
+        .help-text h4 {
+            color: #00d4aa;
+            margin-bottom: 10px;
+        }
+
+        .help-text ol {
+            margin-left: 20px;
+        }
+
+        .help-text li {
+            margin-bottom: 8px;
+        }
+
+        .help-text a {
+            color: #00d4aa;
+            text-decoration: none;
+        }
+
+        .help-text a:hover {
+            text-decoration: underline;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: #00d4aa;
+            color: #1a1d1f;
+        }
+
+        .btn-primary:hover {
+            background: #00b894;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #3a3d3f;
+            color: #ffffff;
+        }
+
+        .btn-secondary:hover {
+            background: #4a4d4f;
+        }
+
+        .status {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .status.success {
+            background: #1e3a1e;
+            border: 1px solid #00d4aa;
+            color: #00d4aa;
+        }
+
+        .status.error {
+            background: #3a1e1e;
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .discord-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .info-box {
+            background: #1a1d1f;
+            border-left: 4px solid #00d4aa;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .info-box h4 {
+            color: #00d4aa;
+            margin-bottom: 8px;
+        }
+
+        .code {
+            background: #1a1d1f;
+            border: 1px solid #3a3d3f;
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-family: 'Courier New', monospace;
+            color: #00d4aa;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>GeForce NOW Settings</h1>
+            <p>Configure your Discord Rich Presence and other preferences</p>
+        </div>
+
+        <div class="section">
+            <h2>Discord Rich Presence</h2>
+            
+            <div class="form-group">
+                <label for="discordClientId">Discord Application Client ID</label>
+                <input type="text" id="discordClientId" placeholder="Enter your Discord Application Client ID">
+            </div>
+
+            <div class="help-text">
+                <h4>How to get your Discord Client ID:</h4>
+                <ol>
+                    <li>Go to the <a href="https://discord.com/developers/applications" target="_blank">Discord Developer Portal</a></li>
+                    <li>Click <strong>"New Application"</strong> and give it a name (e.g., "GeForce NOW")</li>
+                    <li>Go to the <strong>"General Information"</strong> tab</li>
+                    <li>Copy the <strong>"Application ID"</strong> (this is your Client ID)</li>
+                    <li>Paste it in the field above</li>
+                </ol>
+            </div>
+
+            <div class="info-box">
+                <h4>💡 What does this do?</h4>
+                <p>This allows GeForce NOW to show your current game status in Discord, including the game name and artwork. Your Discord friends will see what you're playing on GeForce NOW!</p>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+                <button class="btn btn-secondary" onclick="testConnection()">Test Connection</button>
+            </div>
+
+            <div id="status" class="status"></div>
+        </div>
+
+        <div class="section">
+            <h2>Current Configuration</h2>
+            <div class="info-box">
+                <h4>Discord Status</h4>
+                <p id="discordStatus">Checking...</p>
+            </div>
+            <div class="info-box">
+                <h4>Current Client ID</h4>
+                <p><span class="code" id="currentClientId">Loading...</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        
+        // Load current settings
+        window.addEventListener('DOMContentLoaded', () => {
+            loadCurrentSettings();
+            checkDiscordStatus();
+        });
+
+        async function loadCurrentSettings() {
+            try {
+                const settings = await ipcRenderer.invoke('get-settings');
+                document.getElementById('discordClientId').value = settings.discordClientId || '';
+                document.getElementById('currentClientId').textContent = settings.discordClientId || 'Not configured';
+            } catch (error) {
+                console.error('Failed to load settings:', error);
+            }
+        }
+
+        async function checkDiscordStatus() {
+            try {
+                const status = await ipcRenderer.invoke('check-discord-status');
+                document.getElementById('discordStatus').textContent = status.message;
+                document.getElementById('discordStatus').style.color = status.isRunning ? '#00d4aa' : '#ff6b6b';
+            } catch (error) {
+                document.getElementById('discordStatus').textContent = 'Error checking Discord status';
+                document.getElementById('discordStatus').style.color = '#ff6b6b';
+            }
+        }
+
+        async function saveSettings() {
+            const clientId = document.getElementById('discordClientId').value.trim();
+            
+            if (!clientId) {
+                showStatus('Please enter a Discord Client ID', 'error');
+                return;
+            }
+
+            if (!/^\d{17,19}$/.test(clientId)) {
+                showStatus('Invalid Client ID format. Should be 17-19 digits.', 'error');
+                return;
+            }
+
+            try {
+                await ipcRenderer.invoke('save-settings', { discordClientId: clientId });
+                showStatus('Settings saved successfully! Restart the app to apply changes.', 'success');
+                document.getElementById('currentClientId').textContent = clientId;
+            } catch (error) {
+                showStatus('Failed to save settings: ' + error.message, 'error');
+            }
+        }
+
+        async function testConnection() {
+            const clientId = document.getElementById('discordClientId').value.trim();
+            
+            if (!clientId) {
+                showStatus('Please enter a Discord Client ID first', 'error');
+                return;
+            }
+
+            try {
+                const result = await ipcRenderer.invoke('test-discord-connection', clientId);
+                showStatus(result.message, result.success ? 'success' : 'error');
+            } catch (error) {
+                showStatus('Test failed: ' + error.message, 'error');
+            }
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+            
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

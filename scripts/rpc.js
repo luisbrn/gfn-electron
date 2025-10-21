@@ -90,15 +90,26 @@ function initializeRPC() {
   }
 
   if (!client) {
-    // Try environment variable first, then local-config.js (development), then placeholder
+    // Try settings file first, then environment variable, then local-config.js (development), then placeholder
+    let settings = {};
+    try {
+      settings = require('./settings.js').loadSettings();
+    } catch (e) {
+      /* ignore missing settings */
+    }
+
     let localConfig = {};
     try {
       localConfig = require('./local-config.js') || {};
     } catch (e) {
       /* ignore missing local config */
     }
+
     const clientId =
-      process.env.DISCORD_CLIENT_ID || localConfig.DISCORD_CLIENT_ID || 'YOUR_CLIENT_ID_HERE';
+      settings.discordClientId ||
+      process.env.DISCORD_CLIENT_ID ||
+      localConfig.DISCORD_CLIENT_ID ||
+      'YOUR_CLIENT_ID_HERE';
     if (clientId === 'YOUR_CLIENT_ID_HERE') {
       log(
         'warn',
