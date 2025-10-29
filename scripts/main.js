@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, screen } = require('electron');
 const electronLocalshortcut = require('electron-localshortcut');
 const findProcess = require('find-process');
 const fs = require('fs');
@@ -23,6 +23,11 @@ app.commandLine.appendSwitch(
   'enable-features',
   'VaapiVideoDecoder,WaylandWindowDecorations,RawDraw',
 );
+
+// Force a sane color profile to avoid unexpected color shifts on some Wayland
+// compositors / GPU drivers. 'srgb' is the most compatible choice for streamed
+// video content.
+app.commandLine.appendSwitch('force-color-profile', 'srgb');
 
 app.commandLine.appendSwitch('disable-features', 'UseChromeOSDirectVideoDecoder');
 app.commandLine.appendSwitch('enable-features', 'AcceleratedVideoDecodeLinuxGL');
@@ -82,11 +87,26 @@ if (ozoneFlag) {
 console.log('Session type:', process.env.XDG_SESSION_TYPE || 'unknown');
 
 async function createWindow() {
+  // Prefer creating the window sized to the primary display. On Wayland
+  // this helps avoid fractional scaling / offscreen windows that can
+  // cause weird cursor and input clipping when games request pointer
+  // grab or fullscreen.
+  const display = screen.getPrimaryDisplay();
+  const { width: dispW, height: dispH } = display
+    ? display.workAreaSize
+    : { width: 1280, height: 800 };
+
   const mainWindow = new BrowserWindow({
     fullscreenable: true,
     // Try using server-side decorations when explicitly requested or when
     // client-side decorations misbehave on certain Wayland setups.
     frame: process.argv.includes('--force-frame') ? true : undefined,
+    // Start hidden and show after ready-to-show so the DE has a chance to
+    // map and focus the window correctly (fixes many Wayland focus issues).
+    show: false,
+    width: dispW,
+    height: dispH,
+    useContentSize: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: false,
@@ -104,9 +124,14 @@ async function createWindow() {
     mainWindow.loadURL(homePage);
   }
 
-  // Ensure GUI is at 100% zoom (normal size)
+  // Ensure GUI is at 100% zoom (normal size). Show/focus window when ready
+  // so Wayland compositors don't place it off-screen or prevent input.
   mainWindow.webContents.on('did-finish-load', () => {
-    mainWindow.webContents.setZoomFactor(1.0);
+    try {
+      mainWindow.webContents.setZoomFactor(1.0);
+    } catch (e) {
+      console.warn('Failed to set zoom factor:', e && e.message ? e.message : e);
+    }
 
     // Inject Discord settings button into GeForce NOW interface
     const settingsInjectorPath = path.join(__dirname, 'gfn-settings-injector.js');
@@ -124,6 +149,64 @@ async function createWindow() {
         console.error('Failed to inject settings:', error);
       });
     }
+  });
+
+  // When the content is ready, show and focus the window explicitly. This
+  // helps on Wayland where compositors sometimes don't give focus to new
+  // windows or map them on a different workspace.
+  mainWindow.once('ready-to-show', () => {
+    try {
+      mainWindow.show();
+      mainWindow.focus();
+      // briefly set always-on-top to force compositor focus, then unset it
+      mainWindow.setAlwaysOnTop(true);
+      setTimeout(() => mainWindow.setAlwaysOnTop(false), 250);
+      // center and ensure bounds match primary display
+      mainWindow.setBounds({ x: 0, y: 0, width: dispW, height: dispH });
+      mainWindow.center();
+    } catch (e) {
+      console.warn('Failed to show/focus/adjust window:', e && e.message ? e.message : e);
+    }
+  });
+
+  // Mirror HTML5 fullscreen requests into actual window fullscreen so pointer
+  // locking and input capture behave correctly for streamed games.
+  mainWindow.webContents.on('enter-html-full-screen', () => {
+    try {
+      mainWindow.setFullScreen(true);
+      // Ensure the window occupies the whole display so pointer locking and
+      // input are not constrained to a smaller surface.
+      try {
+        const d = screen.getPrimaryDisplay();
+        const { width: w, height: h } = d ? d.workAreaSize : { width: dispW, height: dispH };
+        mainWindow.setBounds({ x: 0, y: 0, width: w, height: h });
+      } catch (e) {
+        /* ignore */
+      }
+    } catch (e) {
+      console.warn('enter-html-full-screen failed:', e && e.message ? e.message : e);
+    }
+  });
+
+  mainWindow.webContents.on('leave-html-full-screen', () => {
+    try {
+      mainWindow.setFullScreen(false);
+      // Restore bounds to primary display work area
+      try {
+        const d = screen.getPrimaryDisplay();
+        const { width: w, height: h } = d ? d.workAreaSize : { width: dispW, height: dispH };
+        mainWindow.setBounds({ x: 0, y: 0, width: w, height: h });
+      } catch (e) {
+        /* ignore */
+      }
+    } catch (e) {
+      console.warn('leave-html-full-screen failed:', e && e.message ? e.message : e);
+    }
+  });
+
+  // Capture unhandled promise rejections and log them to help debugging streaming
+  process.on('unhandledRejection', (reason, p) => {
+    console.warn('Unhandled Rejection at:', p, 'reason:', reason);
   });
 
   /*
