@@ -1,4 +1,12 @@
-const { app, BrowserWindow, ipcMain, screen, Menu, MenuItem, powerSaveBlocker } = require('electron');
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  screen,
+  Menu,
+  MenuItem,
+  powerSaveBlocker,
+} = require('electron');
 const electronLocalshortcut = require('electron-localshortcut');
 const fs = require('fs');
 const path = require('path');
@@ -89,14 +97,17 @@ if (process.platform === 'linux') {
   // Optimize for Arch's typical Mesa/Intel/NVIDIA setups
   // These flags enhance VAAPI performance specifically for Arch Linux
   // Note: VaapiVideoDecoder is already enabled in coreFeatures above
-  
+
   // Additional performance optimizations for Arch Linux
   // Enable better I/O scheduling and network service (Arch Linux typically uses CFQ or BFQ)
-  app.commandLine.appendSwitch('enable-features', 'NetworkService,NetworkServiceInProcess,ParallelDownloading');
-  
+  app.commandLine.appendSwitch(
+    'enable-features',
+    'NetworkService,NetworkServiceInProcess,ParallelDownloading',
+  );
+
   // Better memory management for Arch Linux
   app.commandLine.appendSwitch('js-flags', '--max-old-space-size=4096'); // 4GB max heap
-  
+
   console.log('Arch Linux optimizations enabled (VAAPI + I/O + Memory)');
 }
 
@@ -191,10 +202,11 @@ console.log('WAYLAND_DISPLAY:', process.env.WAYLAND_DISPLAY || 'not set');
 let isHyprlandCompositor = false;
 function detectCompositor() {
   if (isHyprlandCompositor !== false) return isHyprlandCompositor; // Return cached result
-  
+
   const compositor = process.env.XDG_CURRENT_DESKTOP || '';
-  isHyprlandCompositor = compositor.toLowerCase().includes('hyprland') || 
-                         process.env.HYPRLAND_INSTANCE_SIGNATURE !== undefined;
+  isHyprlandCompositor =
+    compositor.toLowerCase().includes('hyprland') ||
+    process.env.HYPRLAND_INSTANCE_SIGNATURE !== undefined;
   return isHyprlandCompositor;
 }
 
@@ -209,7 +221,7 @@ if (process.env.OZONE_PLATFORM === 'wayland') {
   // Note: PointerLockOptions removed - it was causing cursor confinement issues
   // Let games handle pointer lock naturally via user interaction
   console.log('Wayland-specific optimizations enabled');
-  
+
   // Detect compositor for compositor-specific optimizations (Arch Linux / Omarchy / Kubuntu KDE)
   if (detectCompositor()) {
     // Hyprland-specific optimizations (Omarchy uses Hyprland)
@@ -221,8 +233,8 @@ if (process.env.OZONE_PLATFORM === 'wayland') {
   } else if (process.env.XDG_CURRENT_DESKTOP === 'KDE') {
     console.log('KDE Plasma compositor detected - applying KDE optimizations');
     // KDE handles server-side decorations well, but client-side might be preferred for uniformity
-    // app.commandLine.appendSwitch('enable-features', 'WaylandWindowDecorations'); 
-    
+    // app.commandLine.appendSwitch('enable-features', 'WaylandWindowDecorations');
+
     // Hint for system integration (if not already set by launcher)
     if (!process.env.QT_QPA_PLATFORM) {
       process.env.QT_QPA_PLATFORM = 'wayland';
@@ -236,7 +248,7 @@ let cachedPointerLockMonitor = null;
 
 function loadSettingsInjector() {
   if (cachedSettingsInjector !== null) return cachedSettingsInjector;
-  
+
   const settingsInjectorPath = path.join(__dirname, 'gfn-settings-injector.js');
   if (fs.existsSync(settingsInjectorPath)) {
     try {
@@ -253,7 +265,7 @@ function loadSettingsInjector() {
 
 function getPointerLockMonitor() {
   if (cachedPointerLockMonitor !== null) return cachedPointerLockMonitor;
-  
+
   cachedPointerLockMonitor = `
     (function() {
       console.log('Pointer lock monitor: Initializing (passive mode)...');
@@ -327,7 +339,7 @@ async function createWindow() {
   debugLog(`Window size: ${dispW}x${dispH}`);
 
   debugLog('Initializing BrowserWindow...');
-  
+
   // Prevent display from sleeping while app is running (critical for gaming)
   const powerSaveId = powerSaveBlocker.start('prevent-display-sleep');
   debugLog(`Power save blocker started (ID: ${powerSaveId})`);
@@ -368,10 +380,10 @@ async function createWindow() {
       enableRemoteModule: false, // Security and performance
     },
   });
-  
+
   // Cache main window reference
   mainWindowRef = mainWindow;
-  
+
   debugLog('BrowserWindow created, loading URL...');
 
   if (CLI_ARGS.directStart && CLI_ARGS.directStartIndex >= 0) {
@@ -430,7 +442,7 @@ async function createWindow() {
     console.log('Window ready-to-show, displaying...');
     try {
       mainWindow.show();
-      
+
       // For Hyprland/Omarchy: Use requestIdleCallback-like delay for better tiling integration
       if (detectCompositor()) {
         // Small delay for Hyprland to properly tile/manage the window
@@ -450,12 +462,12 @@ async function createWindow() {
       console.error('Failed to show/focus/adjust window:', e && e.message ? e.message : e);
     }
   });
-  
+
   // Add error handler for window creation
   mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
     console.error('Failed to load page:', errorCode, errorDescription);
   });
-  
+
   // Cleanup function for proper memory management
   function cleanupWindow() {
     console.log('Cleaning up window resources...');
@@ -506,7 +518,7 @@ async function createWindow() {
       try {
         const { width: w, height: h } = getDisplayInfo();
         mainWindow.setBounds({ x: 0, y: 0, width: w, height: h });
-        
+
         // For Hyprland/Omarchy: Ensure proper fullscreen handling with tiling WM
         if (detectCompositor()) {
           // Force focus after fullscreen for Hyprland
@@ -566,13 +578,16 @@ async function createWindowWithRetry(maxRetries = 3) {
       debugLog('Window created successfully');
       return;
     } catch (error) {
-      console.error(`Window creation attempt ${attempt}/${maxRetries} failed:`, error && error.message ? error.message : error);
-      
+      console.error(
+        `Window creation attempt ${attempt}/${maxRetries} failed:`,
+        error && error.message ? error.message : error,
+      );
+
       if (attempt === maxRetries) {
         console.error('Failed to create window after all retries');
         throw error;
       }
-      
+
       // Exponential backoff: 1s, 2s, 4s
       const backoffMs = 1000 * Math.pow(2, attempt - 1);
       debugLog(`Retrying window creation in ${backoffMs}ms...`);
@@ -588,30 +603,40 @@ app.whenReady().then(async () => {
     await createWindowWithRetry();
     debugLog('Window created successfully');
   } catch (error) {
-    console.error('Critical: Failed to create window:', error && error.message ? error.message : error);
+    console.error(
+      'Critical: Failed to create window:',
+      error && error.message ? error.message : error,
+    );
     app.quit();
     return;
   }
 
   // Check Discord in parallel (non-blocking) - this doesn't need to block window creation
   debugLog('Checking Discord status (non-blocking)...');
-  isDiscordRunning().then(running => {
-    discordIsRunning = running;
-    debugLog('Discord check complete:', running ? 'Discord is running' : 'Discord not running');
-    if (discordIsRunning) {
-      DiscordRPC('GeForce NOW').catch(err => debugWarn('DiscordRPC error:', err && err.message ? err.message : err));
-    }
-  }).catch(err => {
-    debugWarn('Discord check failed (non-critical):', err && err.message ? err.message : err);
-    discordIsRunning = false;
-  });
+  isDiscordRunning()
+    .then(running => {
+      discordIsRunning = running;
+      debugLog('Discord check complete:', running ? 'Discord is running' : 'Discord not running');
+      if (discordIsRunning) {
+        DiscordRPC('GeForce NOW').catch(err =>
+          debugWarn('DiscordRPC error:', err && err.message ? err.message : err),
+        );
+      }
+    })
+    .catch(err => {
+      debugWarn('Discord check failed (non-critical):', err && err.message ? err.message : err);
+      discordIsRunning = false;
+    });
 
   app.on('activate', async function () {
     if (BrowserWindow.getAllWindows().length === 0) {
       try {
         await createWindowWithRetry();
       } catch (error) {
-        console.error('Failed to create window on activate:', error && error.message ? error.message : error);
+        console.error(
+          'Failed to create window on activate:',
+          error && error.message ? error.message : error,
+        );
       }
     }
   });
@@ -688,14 +713,14 @@ app.on('browser-window-created', async function (e, window) {
   // Debounce rapid title updates to avoid excessive RPC calls
   let titleUpdateTimer = null;
   const TITLE_UPDATE_DEBOUNCE_MS = 500;
-  
+
   // Always register page-title-updated listener (Discord check is async, so we check dynamically)
   window.on('page-title-updated', async function (e, title) {
     // Clear existing timer
     if (titleUpdateTimer) {
       clearTimeout(titleUpdateTimer);
     }
-    
+
     // Debounce title updates
     titleUpdateTimer = setTimeout(() => {
       // Check Discord status dynamically (non-blocking)
@@ -711,20 +736,22 @@ app.on('browser-window-created', async function (e, window) {
         }
       } else if (discordIsRunning === undefined) {
         // Not checked yet, check now (non-blocking)
-        isDiscordRunning().then(running => {
-          discordIsRunning = running;
-          if (discordIsRunning) {
-            try {
-              if (DiscordRPC && typeof DiscordRPC === 'function') {
-                DiscordRPC(title);
+        isDiscordRunning()
+          .then(running => {
+            discordIsRunning = running;
+            if (discordIsRunning) {
+              try {
+                if (DiscordRPC && typeof DiscordRPC === 'function') {
+                  DiscordRPC(title);
+                }
+              } catch (err) {
+                debugWarn('DiscordRPC call failed:', err && err.message ? err.message : err);
               }
-            } catch (err) {
-              debugWarn('DiscordRPC call failed:', err && err.message ? err.message : err);
             }
-          }
-        }).catch(() => {
-          discordIsRunning = false;
-        });
+          })
+          .catch(() => {
+            discordIsRunning = false;
+          });
       }
       // If discordIsRunning === false, do nothing (Discord not running)
       titleUpdateTimer = null;
@@ -758,7 +785,7 @@ app.on('will-quit', async () => {
       settingsWindow.destroy();
       settingsWindow = null;
     }
-    
+
     // Cleanup all windows
     const windows = BrowserWindow.getAllWindows();
     windows.forEach(cleanupWindow);
@@ -771,11 +798,11 @@ app.on('will-quit', async () => {
 // Cleanup function for proper memory management
 function cleanupWindow(window) {
   if (!window || window.isDestroyed()) return;
-  
+
   try {
     // Remove all event listeners
     window.removeAllListeners();
-    
+
     // Cleanup webContents
     const webContents = window.webContents;
     if (webContents && !webContents.isDestroyed()) {
@@ -788,14 +815,14 @@ function cleanupWindow(window) {
         // Ignore cleanup errors
       }
     }
-    
+
     // Unregister all shortcuts for this window
     try {
       electronLocalshortcut.unregisterAll(window);
     } catch (e) {
       // Ignore if already unregistered
     }
-    
+
     // Destroy window
     window.destroy();
   } catch (e) {
@@ -806,7 +833,7 @@ function cleanupWindow(window) {
 app.on('window-all-closed', async function () {
   // Cleanup all windows before quit for proper memory management
   BrowserWindow.getAllWindows().forEach(cleanupWindow);
-  
+
   if (process.platform !== 'darwin') {
     app.quit();
   }
@@ -880,37 +907,44 @@ function isDiscordRunning() {
   return new Promise(resolve => {
     // Use cached result if recent
     const now = Date.now();
-    if (discordCheckCache.result !== null && 
-        (now - discordCheckCache.timestamp) < DISCORD_CHECK_CACHE_MS) {
+    if (
+      discordCheckCache.result !== null &&
+      now - discordCheckCache.timestamp < DISCORD_CHECK_CACHE_MS
+    ) {
       resolve(discordCheckCache.result);
       return;
     }
-    
+
     // Use faster ps-based check instead of find-process for better performance
     const { exec } = require('child_process');
     const startTime = Date.now();
-    
-    exec('ps aux | grep -i discord | grep -v grep | head -1', { timeout: 2000 }, (error, stdout) => {
-      const elapsed = Date.now() - startTime;
-      if (elapsed > 1000) {
-        debugLog(`Discord check took ${elapsed}ms (considering timeout)`);
-      }
-      
-      if (error) {
-        // No Discord process found or error (non-critical)
-        discordCheckCache = { result: false, timestamp: now };
-        resolve(false);
-        return;
-      }
-      
-      const hasDiscord = stdout.trim().length > 0 && 
-                         stdout.toLowerCase().includes('discord') &&
-                         !stdout.includes('grep') &&
-                         !stdout.includes('node');
-      
-      // Cache result
-      discordCheckCache = { result: hasDiscord, timestamp: now };
-      resolve(hasDiscord);
-    });
+
+    exec(
+      'ps aux | grep -i discord | grep -v grep | head -1',
+      { timeout: 2000 },
+      (error, stdout) => {
+        const elapsed = Date.now() - startTime;
+        if (elapsed > 1000) {
+          debugLog(`Discord check took ${elapsed}ms (considering timeout)`);
+        }
+
+        if (error) {
+          // No Discord process found or error (non-critical)
+          discordCheckCache = { result: false, timestamp: now };
+          resolve(false);
+          return;
+        }
+
+        const hasDiscord =
+          stdout.trim().length > 0 &&
+          stdout.toLowerCase().includes('discord') &&
+          !stdout.includes('grep') &&
+          !stdout.includes('node');
+
+        // Cache result
+        discordCheckCache = { result: hasDiscord, timestamp: now };
+        resolve(hasDiscord);
+      },
+    );
   });
 }

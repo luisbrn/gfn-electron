@@ -11,6 +11,8 @@ const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
 // Backoff configuration
 const MAX_RETRIES = 3;
 const INITIAL_BACKOFF_MS = 500;
+// Request deduplication: cache in-flight requests to prevent duplicate Steam API calls
+const pendingRequests = new Map();
 
 // Debug logging flag - set DEBUG=true in environment for verbose logs
 const DEBUG = process.env.DEBUG === 'true';
@@ -20,17 +22,33 @@ function log(level, ...args) {
   console[level](...args);
 }
 
+// Cache Electron app reference to avoid repeated requires
+let electronApp = null;
+function getElectronApp() {
+  if (electronApp === null) {
+    try {
+      electronApp = require('electron').app;
+    } catch (e) {
+      electronApp = false; // Mark as unavailable
+    }
+  }
+  return electronApp || null;
+}
+
 function getCacheFilePath() {
   try {
-    const { app } = require('electron');
-    const cachePath = path.join(app.getPath('userData'), 'game_cache.json');
-    log('debug', `Using Electron userData cache: ${cachePath}`);
-    return cachePath;
+    const app = getElectronApp();
+    if (app) {
+      const cachePath = path.join(app.getPath('userData'), 'game_cache.json');
+      log('debug', `Using Electron userData cache: ${cachePath}`);
+      return cachePath;
+    }
   } catch (e) {
-    const cachePath = path.join(__dirname, '..', 'game_cache.json');
-    log('debug', `Using fallback cache path: ${cachePath}`);
-    return cachePath;
+    // Fall through to fallback
   }
+  const cachePath = path.join(__dirname, '..', 'game_cache.json');
+  log('debug', `Using fallback cache path: ${cachePath}`);
+  return cachePath;
 }
 
 const CACHE_FILE = getCacheFilePath();
@@ -184,17 +202,32 @@ try {
   // downloader not available, that's fine
 }
 
+// Batch cache writes to avoid excessive I/O
+let cacheWriteTimer = null;
+const CACHE_WRITE_DELAY_MS = 1000; // Batch writes within 1 second
+
 function saveGameCache() {
-  try {
-    // Write to Electron userData cache
-    fs.writeFileSync(CACHE_FILE, JSON.stringify(gameCache, null, 2));
-    // Also write to repo-level cache for developer visibility
-    const repoCachePath = path.join(__dirname, '..', 'game_cache.json');
-    fs.writeFileSync(repoCachePath, JSON.stringify(gameCache, null, 2));
-    log('debug', 'Game cache saved successfully to both locations');
-  } catch (e) {
-    log('error', 'Error saving cache:', e.message);
+  // Clear existing timer
+  if (cacheWriteTimer) {
+    clearTimeout(cacheWriteTimer);
   }
+
+  // Schedule write after delay (batching)
+  cacheWriteTimer = setTimeout(() => {
+    try {
+      const cacheData = JSON.stringify(gameCache, null, 2);
+      // Write to Electron userData cache
+      fs.writeFileSync(CACHE_FILE, cacheData);
+      // Also write to repo-level cache for developer visibility
+      const repoCachePath = path.join(__dirname, '..', 'game_cache.json');
+      fs.writeFileSync(repoCachePath, cacheData);
+      log('debug', 'Game cache saved successfully to both locations');
+    } catch (e) {
+      log('error', 'Error saving cache:', e.message);
+    } finally {
+      cacheWriteTimer = null;
+    }
+  }, CACHE_WRITE_DELAY_MS);
 }
 
 function isCacheEntryValid(entryTimestamp) {
@@ -202,22 +235,90 @@ function isCacheEntryValid(entryTimestamp) {
   return Date.now() - entryTimestamp <= CACHE_TTL_MS;
 }
 
+// Cache normalized text to avoid repeated processing
+const normalizedTextCache = new Map();
+const NORMALIZE_CACHE_MAX_SIZE = 1000; // Limit cache size
+
 function normalizeText(text) {
-  return text
+  if (!text || typeof text !== 'string') return '';
+
+  // Check cache first
+  if (normalizedTextCache.has(text)) {
+    return normalizedTextCache.get(text);
+  }
+
+  // Normalize text
+  const normalized = text
     .replace(/[™®©]/g, '') // Remove trademark symbols
     .replace(/[''""]/g, '') // Remove smart quotes
     .replace(/[^\w\s]/g, '') // Remove other punctuation
     .toLowerCase()
     .trim();
+
+  // Cache result (with size limit to prevent memory issues)
+  if (normalizedTextCache.size >= NORMALIZE_CACHE_MAX_SIZE) {
+    // Remove oldest entry (simple FIFO)
+    const firstKey = normalizedTextCache.keys().next().value;
+    normalizedTextCache.delete(firstKey);
+  }
+  normalizedTextCache.set(text, normalized);
+
+  return normalized;
 }
+
+// Optimized axios instance with better defaults for Arch Linux
+const axiosInstance = axios.create({
+  timeout: 10000, // 10 second timeout (reduced from default for faster failure)
+  headers: {
+    'User-Agent':
+      'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.152 Safari/537.36',
+    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Accept-Encoding': 'gzip, deflate',
+    Connection: 'keep-alive', // HTTP keep-alive for better performance
+    'Upgrade-Insecure-Requests': '1',
+  },
+  // Enable HTTP/2 if available (better performance on modern systems)
+  httpAgent: false, // Let axios choose the best agent
+  httpsAgent: false,
+  // Max redirects
+  maxRedirects: 5,
+  // Validate status
+  validateStatus: status => status >= 200 && status < 400,
+});
 
 async function requestWithBackoff(url, opts = {}, retries = 0) {
   try {
-    return await axios.get(url, opts);
+    // Merge opts with axios instance defaults
+    const requestOpts = {
+      ...opts,
+      timeout: opts.timeout || 10000,
+    };
+    return await axiosInstance.get(url, requestOpts);
   } catch (err) {
-    if (retries >= MAX_RETRIES) throw err;
+    // Don't retry on client errors (4xx) except 429 (rate limit)
+    if (
+      err.response &&
+      err.response.status >= 400 &&
+      err.response.status < 500 &&
+      err.response.status !== 429
+    ) {
+      log('debug', `Client error ${err.response.status}, not retrying: ${url}`);
+      throw err;
+    }
+
+    if (retries >= MAX_RETRIES) {
+      log('debug', `Max retries reached for ${url}`);
+      throw err;
+    }
+
     const backoff = INITIAL_BACKOFF_MS * Math.pow(2, retries);
-    log('debug', `Request failed, retrying in ${backoff}ms (attempt ${retries + 1})`);
+    log(
+      'debug',
+      `Request failed, retrying in ${backoff}ms (attempt ${retries + 1}/${
+        MAX_RETRIES + 1
+      }): ${url}`,
+    );
     await new Promise(r => setTimeout(r, backoff));
     return requestWithBackoff(url, opts, retries + 1);
   }
@@ -266,125 +367,176 @@ async function getSteamAppId(gameName) {
       return cached;
     }
 
-    // Try several progressively simpler queries if Steam returns no results.
-    const tried = new Set();
-    const queriesToTry = [];
-    // Primary: full game name
-    queriesToTry.push(gameName);
-    // Secondary: strip common qualifiers like playtest/demo/alpha/beta/test
-    const stripped = gameName
-      .replace(/\b(playtest|play test|demo|alpha|beta|test|internal)\b/gi, '')
-      .replace(/\s+/g, ' ')
-      .trim();
-    if (stripped && stripped !== gameName) queriesToTry.push(stripped);
-    // Tertiary: progressively shorter prefixes (drop trailing words)
-    const parts = gameName.split(/\s+/).filter(Boolean);
-    for (let n = parts.length - 1; n >= 1; n--) {
-      const prefix = parts.slice(0, n).join(' ');
-      if (prefix && !queriesToTry.includes(prefix)) queriesToTry.push(prefix);
+    // Check if request is already in flight (deduplication)
+    if (pendingRequests.has(gameName)) {
+      log('debug', `Request for "${gameName}" already pending, reusing existing request...`);
+      return pendingRequests.get(gameName);
     }
 
-    let results = [];
-    for (const q of queriesToTry) {
-      if (tried.has(q)) continue;
-      tried.add(q);
-      const url = `https://store.steampowered.com/search/?term=${encodeURIComponent(
-        q,
-      )}&category1=998`;
-      log('debug', `Searching Steam for: "${q}"`);
-      const resp = await requestWithBackoff(url, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; GFN-Electron)' },
-        timeout: 15000,
-      });
-
-      const $ = cheerio.load(resp.data);
-      results = [];
-      $('a[data-ds-appid]').each((i, element) => {
-        const appId = $(element).attr('data-ds-appid');
-        const titleElement = $(element).find('.title');
-        const title = titleElement.text().trim();
-        if (appId && title) results.push({ appId, title });
-      });
-
-      log('debug', `Found ${results.length} Steam results for query: "${q}"`);
-      if (results.length > 0) break;
-    }
-
-    if (results.length === 0) return null;
-
-    let best = null;
-    let bestScore = 0;
-    const normalizedSearch = normalizeText(gameName);
-
-    for (const result of results) {
-      let score = 0;
-      const normalizedTitle = normalizeText(result.title);
-      if (normalizedTitle === normalizedSearch) score = 100;
-      else if (normalizedTitle.includes(normalizedSearch)) score = 85;
-      else if (normalizedSearch.includes(normalizedTitle)) score = 70;
-      else {
-        const searchWords = normalizedSearch.split(/\s+/).filter(w => w.length > 2);
-        const titleWords = normalizedTitle.split(/\s+/).filter(w => w.length > 2);
-        const commonWords = searchWords.filter(w => titleWords.includes(w));
-        if (searchWords.length > 0) score = (commonWords.length / searchWords.length) * 50;
+    // Create promise for Steam lookup to enable deduplication
+    const lookupPromise = (async () => {
+      // Try several progressively simpler queries if Steam returns no results.
+      const tried = new Set();
+      const queriesToTry = [];
+      // Primary: full game name
+      queriesToTry.push(gameName);
+      // Secondary: strip common qualifiers like playtest/demo/alpha/beta/test
+      // Use compiled regex for better performance
+      const qualifierRegex = /\b(playtest|play test|demo|alpha|beta|test|internal)\b/gi;
+      const whitespaceRegex = /\s+/g;
+      const stripped = gameName.replace(qualifierRegex, '').replace(whitespaceRegex, ' ').trim();
+      if (stripped && stripped !== gameName) queriesToTry.push(stripped);
+      // Tertiary: progressively shorter prefixes (drop trailing words)
+      const parts = gameName.split(/\s+/).filter(Boolean);
+      for (let n = parts.length - 1; n >= 1; n--) {
+        const prefix = parts.slice(0, n).join(' ');
+        if (prefix && !queriesToTry.includes(prefix)) queriesToTry.push(prefix);
       }
-      log('debug', `"${result.title}" -> score: ${score.toFixed(1)}`);
-      if (score > bestScore) {
-        best = result;
-        bestScore = score;
-      }
-    }
 
-    if (best && bestScore >= 25) {
-      log(
-        'info',
-        `Steam ID found: "${gameName}" -> ${best.appId} (${best.title}, score: ${bestScore.toFixed(
-          1,
-        )})`,
-      );
-      gameCache[gameName] = { id: best.appId, ts: Date.now() };
-      saveGameCache();
-      // Attempt to download and process GFN capsule image (non-blocking)
-      try {
-        if (downloadGfnCapsule) {
-          const gfnOut = path.join(
-            __dirname,
-            '..',
-            'GFN_Discord_Rich_Presence',
-            'downloaded_capsules',
-            `${best.appId}.png`,
-          );
-          if (!fs.existsSync(gfnOut)) {
-            // fire-and-forget
-            downloadGfnCapsule(best.appId).catch(err =>
-              log('warn', 'GFN capsule download failed:', err && err.message ? err.message : err),
-            );
-          }
+      let results = [];
+      // Optimize: build URL once and reuse base
+      const steamBaseUrl = 'https://store.steampowered.com/search/';
+      for (const q of queriesToTry) {
+        if (tried.has(q)) continue;
+        tried.add(q);
+        // Optimize: use URLSearchParams for proper encoding (Node.js compatible)
+        const searchParams = new URLSearchParams();
+        searchParams.set('term', q);
+        searchParams.set('category1', '998');
+        const url = `${steamBaseUrl}?${searchParams.toString()}`;
+        log('debug', `Searching Steam for: "${q}"`);
+        const resp = await requestWithBackoff(url, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; GFN-Electron)' },
+          timeout: 15000,
+        });
+
+        const $ = cheerio.load(resp.data);
+        results = [];
+        $('a[data-ds-appid]').each((i, element) => {
+          const appId = $(element).attr('data-ds-appid');
+          const titleElement = $(element).find('.title');
+          const title = titleElement.text().trim();
+          if (appId && title) results.push({ appId, title });
+        });
+
+        log('debug', `Found ${results.length} Steam results for query: "${q}"`);
+        if (results.length > 0) break;
+      }
+
+      if (results.length === 0) return null;
+
+      let best = null;
+      let bestScore = 0;
+      const normalizedSearch = normalizeText(gameName);
+
+      // Pre-compute search words once for efficiency
+      const searchWords = normalizedSearch.split(/\s+/).filter(w => w.length > 2);
+      const searchWordsSet = new Set(searchWords); // Use Set for O(1) lookup
+
+      for (const result of results) {
+        let score = 0;
+        const normalizedTitle = normalizeText(result.title);
+
+        // Fast path: exact match
+        if (normalizedTitle === normalizedSearch) {
+          score = 100;
+        } else if (normalizedTitle.includes(normalizedSearch)) {
+          score = 85;
+        } else if (normalizedSearch.includes(normalizedTitle)) {
+          score = 70;
+        } else {
+          // Word matching: use Set for faster lookup
+          const titleWords = normalizedTitle.split(/\s+/).filter(w => w.length > 2);
+          const titleWordsSet = new Set(titleWords);
+          const commonWords = searchWords.filter(w => titleWordsSet.has(w));
+          if (searchWords.length > 0) score = (commonWords.length / searchWords.length) * 50;
         }
-      } catch (e) {
-        log('debug', 'GFN capsule download skipped or failed:', e && e.message ? e.message : e);
-      }
-      return best.appId;
-    }
 
-    log(
-      'warn',
-      `No suitable Steam match found for: "${gameName}" (best score: ${bestScore.toFixed(1)})`,
-    );
-    return null;
+        log('debug', `"${result.title}" -> score: ${score.toFixed(1)}`);
+        if (score > bestScore) {
+          best = result;
+          bestScore = score;
+        }
+      }
+
+      if (best && bestScore >= 25) {
+        log(
+          'info',
+          `Steam ID found: "${gameName}" -> ${best.appId} (${
+            best.title
+          }, score: ${bestScore.toFixed(1)})`,
+        );
+        gameCache[gameName] = { id: best.appId, ts: Date.now() };
+        saveGameCache();
+        // Attempt to download and process GFN capsule image (non-blocking)
+        try {
+          if (downloadGfnCapsule) {
+            const gfnOut = path.join(
+              __dirname,
+              '..',
+              'GFN_Discord_Rich_Presence',
+              'downloaded_capsules',
+              `${best.appId}.png`,
+            );
+            if (!fs.existsSync(gfnOut)) {
+              // fire-and-forget
+              downloadGfnCapsule(best.appId).catch(err =>
+                log('warn', 'GFN capsule download failed:', err && err.message ? err.message : err),
+              );
+            }
+          }
+        } catch (e) {
+          log('debug', 'GFN capsule download skipped or failed:', e && e.message ? e.message : e);
+        }
+        return best.appId;
+      }
+
+      log(
+        'warn',
+        `No suitable Steam match found for: "${gameName}" (best score: ${bestScore.toFixed(1)})`,
+      );
+      return null;
+    })();
+
+    // Cache the promise for deduplication
+    pendingRequests.set(gameName, lookupPromise);
+
+    // Clean up after completion (success or failure)
+    try {
+      const result = await lookupPromise;
+      return result;
+    } finally {
+      pendingRequests.delete(gameName);
+    }
   } catch (e) {
+    // Ensure cleanup on error
+    pendingRequests.delete(gameName);
     log('error', 'Steam lookup error:', e && e.message ? e.message : e);
     return null;
   }
 }
 
+// Cache compiled regex for better performance
+const GFN_SUFFIX_REGEX = /\s+on GeForce NOW$/i;
+
 function extractGameName(title) {
-  if (!title || !title.includes('on GeForce NOW')) return null;
-  return title.replace(/\s+on GeForce NOW$/i, '').trim() || null;
+  if (!title || typeof title !== 'string') return null;
+  // Use includes check first (faster than regex)
+  if (!title.includes('on GeForce NOW')) return null;
+  return title.replace(GFN_SUFFIX_REGEX, '').trim() || null;
+}
+
+// Cache disable RPC flag to avoid repeated checks
+let disableRPCCached = null;
+function isRPCDisabled() {
+  if (disableRPCCached === null) {
+    disableRPCCached = process.argv.includes('--disable-rpc');
+  }
+  return disableRPCCached;
 }
 
 async function DiscordRPC(title) {
-  if (process.argv.includes('--disable-rpc')) {
+  if (isRPCDisabled()) {
     log('debug', 'Discord RPC disabled via --disable-rpc flag');
     return;
   }
