@@ -1,0 +1,19 @@
+[Desktop Entry]
+Name=GeForce NOW
+Comment=A Linux desktop web app for GeForce NOW
+Exec=/media/anduril/EV02/Documents/gfn-electron/scripts/gfn-electron-launcher.sh %U
+Terminal=false
+Type=Application
+Icon=/media/anduril/EV02/Documents/gfn-electron/icon.png
+StartupWMClass=com.github.hmlendea.geforcenow-electron
+Categories=Game;Network;
+Keywords=geforce;now;nvidia;cloud;gaming;
+Actions=ForceWayland;ForceX11;
+
+[Desktop Action ForceWayland]
+Name=Force Wayland
+Exec=/media/anduril/EV02/Documents/gfn-electron/scripts/gfn-electron-launcher.sh --ozone=wayland %U
+
+[Desktop Action ForceX11]
+Name=Force X11
+Exec=/media/anduril/EV02/Documents/gfn-electron/scripts/gfn-electron-launcher.sh --ozone=x11 %U

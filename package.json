@@ -6,7 +6,7 @@
   "description": "A Linux desktop web app for GeForce NOW",
   "main": "scripts/main.js",
   "scripts": {
-    "start": "electron .",
+    "start": "electron . --no-sandbox",
     "build": "electron-builder --publish never",
     "lint": "eslint . --ext .js",
     "test": "node scripts/test-steam-scraper.js",
